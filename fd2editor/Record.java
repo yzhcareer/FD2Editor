@@ -22,12 +22,12 @@ public class Record {
     private String recordName;
     /** 纪录在文件中的偏移地址 */
     private long fileOffset;
-    /** 纪录在数据段中的偏移地址 */
-    private int blockOffset;
-    /** 数据段起始地址 */
-    private long blockStart;
-    /** 数据段字节缓冲区 */
-    private MappedByteBuffer blockBuffer;
+    /** 纪录在缓冲区中的偏移地址 */
+    private int bufferOffset;
+    /** 数据段缓冲区在文件起始地址 */
+    private long bufferStart;
+    /** 文件字节缓冲区 */
+    private MappedByteBuffer fileBuffer;
     /** 纪录的字段数目 */
     private int length;
     /** 纪录的字节长度 */
@@ -39,20 +39,20 @@ public class Record {
     
     /** 构造器
      * @param fName: 文件名
-     * @param bBuffer: 数据段缓冲区
+     * @param fBuffer: 数据段缓冲区
      * @param bName: 数据段名
      * @param rName: 纪录名
      * @param fOffset: 纪录在文件中的偏移量
      * @param bStart: 数据段在文件中的起始偏移量
      * @param tList: 纪录包含的Segment列表
      */
-    public Record(String fName, MappedByteBuffer bBuffer, String bName, String rName, long fOffset, long bStart, SEGTYPE[] tList) {
+    public Record(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart, SEGTYPE[] tList) {
         this.setFileName(fName);
         this.setBlockName(bName);
         this.setRecordName(rName);
-        this.linkBuffer(bBuffer);
+        this.linkBuffer(fBuffer);
         this.setFileOffset(fOffset);
-        this.setBlockStart(bStart);
+        this.setBufferStart(bStart);
         this.setSegTypeList(tList);
         this.initSegs();
     }
@@ -64,27 +64,27 @@ public class Record {
         this.setBlockName(NOTINTIATED);
         this.setRecordName(NOTINTIATED);
         this.setFileOffset(0);
-        this.setBlockStart(0);
+        this.setBufferStart(0);
     }
     
     /**
      * 用空白构造器的情况下初始化字段,调用fileName, recordName, fileOffset, bStart的setter
      * 配合无参数构造器使用
      * @param fName: 字段所在文件名
-     * @param bBuffer: 数据段缓冲区
+     * @param fBuffer: 数据段缓冲区
      * @param bName: 字段所在数据段名
      * @param rName: 字段所属纪录名
      * @param fOffset: 字段在文件中的偏移地址
      * @param bStart: 字段在数据段中的偏移地址
      * @param tList: 纪录包含的所有字段
      */
-    public final void initRecord(String fName, MappedByteBuffer bBuffer, String bName, String rName, long fOffset, long bStart, SEGTYPE[] tList){
+    public final void initRecord(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart, SEGTYPE[] tList){
         this.setFileName(fName);
         this.setBlockName(bName);
         this.setRecordName(rName);
-        this.linkBuffer(bBuffer);
+        this.linkBuffer(fBuffer);
         this.setFileOffset(fOffset);
-        this.setBlockStart(bStart);
+        this.setBufferStart(bStart);
         this.setSegTypeList(tList);
         this.initSegs();
     }
@@ -101,7 +101,7 @@ public class Record {
      * @param bBuffer: 缓冲区指针 
      */
     public final void linkBuffer(MappedByteBuffer bBuffer){
-        this.blockBuffer = bBuffer;
+        this.fileBuffer = bBuffer;
     }
 
     /** 
@@ -109,7 +109,7 @@ public class Record {
      * @return MappedByteBuffer: 缓冲区指针 
      */
     public final MappedByteBuffer getBuffer(){
-        return this.blockBuffer;
+        return this.fileBuffer;
     }
     
     /** 
@@ -117,7 +117,11 @@ public class Record {
      * @return SEGTYPE[]: 纪录包含的所有字段
      */
     public final SEGTYPE[] getSegTypeList(){
-        return this.segTypeList.clone();
+        if(this.segTypeList != null){
+            return this.segTypeList.clone();
+        } else {
+            return null;
+        }
     }
     
     /** 
@@ -136,7 +140,11 @@ public class Record {
      * @return SEGTYPE[]: 纪录包含的所有字段
      */
     public final BaseSeg[] getSegList(){
-        return this.segList.clone();
+        if(this.segList != null){
+            return this.segList.clone();
+        } else {
+            return null;
+        }
     }
     
     /** 
@@ -148,7 +156,7 @@ public class Record {
         BaseSeg bSeg;
         for(int i =0;i<length; i++){
             bSeg = segTypeList[i].createSeg();
-            bSeg.initSeg(fileName, blockBuffer, blockName, recordName, fileOffset + recordLength, blockStart);
+            bSeg.initSeg(fileName, fileBuffer, blockName, recordName, fileOffset + recordLength, bufferStart);
             segList[i] = bSeg;
             recordLength += bSeg.getLength();
         }
@@ -159,7 +167,7 @@ public class Record {
      * @throws NullPointerException: 没有连接到缓冲区则报错
      */
     public final void seqRead() throws NullPointerException {
-        if(blockBuffer != null){
+        if(fileBuffer != null){
             for (BaseSeg bSeg: segList) {
                 bSeg.seqRead();
             }
@@ -172,7 +180,7 @@ public class Record {
      * 从blockOffset指定位置开始读取字段
      */
     public final void read() {
-        blockBuffer.position(blockOffset);
+        fileBuffer.position(bufferOffset);
         seqRead();
     }
     
@@ -181,7 +189,7 @@ public class Record {
      * @throws NullPointerException 
      */
     public final void seqWrite() throws NullPointerException {
-        if(blockBuffer != null){
+        if(fileBuffer != null){
             for (BaseSeg bSeg: segList) {
                 bSeg.seqWrite();
             } 
@@ -194,7 +202,7 @@ public class Record {
      * 从blockOffset指定位置开始读取字段
      */
     public final void write(){
-        blockBuffer.position(blockOffset);
+        fileBuffer.position(bufferOffset);
         seqWrite();
     }
    
@@ -319,40 +327,40 @@ public class Record {
     }
    
     /** 胶水方法:数据段偏移地址
-     * @return long: 字段在数据段中的偏移地址 
+     * @return long: 字段在缓冲区中的偏移地址 
      */
     public final long getBlockOffset(){
-        return this.blockOffset;
+        return this.bufferOffset;
     }
     
     /** 胶水方法:数据段偏移地址
-     * @param bOffset: 字段在数据段中的偏移地址
+     * @param bOffset: 字段在缓冲区中的偏移地址
      */
-    public final void setBlockOffset(int bOffset){
-        this.blockOffset = bOffset;
+    public final void setBufferOffset(int bOffset){
+        this.bufferOffset = bOffset;
         if(segList != null){
             for(BaseSeg bSeg: segList) {
-                bSeg.setBlockOffset(bOffset);
+                bSeg.setBufferOffset(bOffset);
             }
         }
     }
     
     /** 胶水方法:数据段起始地址
-     * @return long: 字段在数据段中的偏移地址 
+     * @return long: 字段在缓冲区中的偏移地址 
      */
-    public final long getBlockStart(){
-        return this.blockStart;
+    public final long getBufferStart(){
+        return this.bufferStart;
     }
     
     /** 胶水方法:数据段偏移地址
      * @param bStart: 数据段开始的偏移地址 
      */
-    public final void setBlockStart(long bStart){
-        this.blockStart = bStart;
-        this.blockOffset = (int)(this.fileOffset - bStart);
+    public final void setBufferStart(long bStart){
+        this.bufferStart = bStart;
+        this.bufferOffset = (int)(this.fileOffset - bStart);
         if(segList != null){
             for(BaseSeg bSeg: segList) {
-                bSeg.setBlockStart(bStart);
+                bSeg.setBufferStart(bStart);
             }
         }
     }  

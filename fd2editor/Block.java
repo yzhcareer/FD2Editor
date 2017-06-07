@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package fd2editor;
+import java.nio.MappedByteBuffer;
 
 /**
  * 数据段类, 是一系列Record的集合
@@ -16,6 +17,10 @@ public class Block {
     private String blockName;
     /** 数据段在文件中的偏移地址 */
     private long fileOffset;
+    /** 数据段在缓冲区中的偏移地址 */
+    private long bufferOffset;
+    /** 缓冲区在文件中的起始地址 */
+    private long bufferStart;
     /** 数据段所含纪录的数目 */
     private int length;
     /** 数据段纪录字节长度 */
@@ -26,41 +31,61 @@ public class Block {
     private Record[] recordList;
     /** 纪录所含字段的列表 */
     private SEGTYPE[] segTypeList;
+    /** 数据段缓冲区指针 */
+    private MappedByteBuffer fileBuffer;
     
     /**
      * 构造器, 从一个RECORDTYPE enum纪录创建实例
      * @param rType: 数据段所含纪录的基本信息
+     * @param fBuffer: 缓冲区指针
      */
-    public Block(RECORDTYPE rType){
-        this.fileName = rType.getFileName();
-        this.blockName = rType.name();
-        this.fileOffset = rType.getFileOffset();
-        this.nameList = rType.getNameList();
-        this.segTypeList = rType.getSegList(); 
-        if(this.nameList != null){
-            this.length = this.nameList.length;
-        }
+    public Block(RECORDTYPE rType, MappedByteBuffer fBuffer){
+        this.setFileName(rType.getFileName());
+        this.setBlockName(rType.name());
+        this.setFileOffset(rType.getFileOffset());
+        this.setNameList(rType.getNameList());
+        this.setSegTypeList(rType.getSegList()); 
+        this.linkBuffer(fBuffer);
     }
     
     /**
      * 空白构造器
      */
     public Block(){
-        this(null);
+        this(null, null);
     }
     
     /**
      * 读取一个RECORDTYPE并初始化数据段
-     * @param rType 
+     * @param rType: 数据段所含纪录的基本信息
+     * @param fBuffer: 缓冲区指针
      */
-    public final void initBlock(RECORDTYPE rType){
+    public final void initBlock(RECORDTYPE rType, MappedByteBuffer fBuffer){
         this.setFileName(rType.getFileName());
         this.setBlockName(rType.name());
         this.setFileOffset(rType.getFileOffset());
-        this.nameList = rType.getNameList();
-        this.segTypeList = rType.getSegList(); 
+        this.setNameList(rType.getNameList());
+        this.setSegTypeList(rType.getSegList()); 
+        this.linkBuffer(fileBuffer);
     }
     
+    
+    
+    /** 
+     * 链接数据缓冲区 
+     * @param bBuffer: 缓冲区指针 
+     */
+    public final void linkBuffer(MappedByteBuffer bBuffer){
+        this.fileBuffer = bBuffer;
+    }
+
+    /** 
+     * 获取数据缓冲区
+     * @return MappedByteBuffer: 缓冲区指针 
+     */
+    public final MappedByteBuffer getBuffer(){
+        return this.fileBuffer;
+    }
     
     /** 胶水方法:文件名
      * @return String: 返回文件名 
@@ -123,12 +148,39 @@ public class Block {
         return this.recordLength;
     }
     
+    /**
+     * 胶水方法, 名称字符串列表
+     * @return 
+     */
+    public final String[] getNameList(){
+        if (this.nameList != null){
+            return this.nameList.clone();
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * 胶水方法, 名称字符串列表 
+     * @param nList: 名称列表
+     */
+    public final void setNameList(String[] nList){
+        if (this.nameList != null){
+            this.nameList = nList.clone();
+            this.length = nList.length;
+        }
+    }
+      
     /** 
      * 获取纪录包含的segTypeList
      * @return SEGTYPE[]: 纪录包含的所有字段
      */
     public final SEGTYPE[] getSegTypeList(){
-        return this.segTypeList.clone();
+        if (segTypeList != null){
+            return this.segTypeList.clone();
+        } else {
+            return null;
+        }
     }
     
     /** 
@@ -145,6 +197,10 @@ public class Block {
      * @return SEGTYPE[]: 纪录包含的所有字段
      */
     public final Record[] getRecordList(){
-        return this.recordList.clone();
+        if(recordList != null){
+            return this.recordList.clone();
+        } else {
+            return null;
+        }
     }
 }

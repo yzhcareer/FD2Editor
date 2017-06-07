@@ -48,7 +48,7 @@ public class FD2Editor {
         BaseSeg bs1 = st1.createSeg();
         bs1.initSeg(fileName, fBuffer, "test", "test1", 890, 0);
         bs1.read();
-        System.out.print(bs1);
+        //System.out.print(bs1);
         
         Record rc1 = new Record();
         SEGTYPE[] tList = {SEGTYPE.物品类型, SEGTYPE.攻击, SEGTYPE.命中, SEGTYPE.防御, SEGTYPE.速度, SEGTYPE.附加属性,

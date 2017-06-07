@@ -34,7 +34,11 @@ class SegUnused extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -63,7 +67,11 @@ class SegFlip extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -93,7 +101,11 @@ class SegSelector extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -122,7 +134,11 @@ class SegItem extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -151,7 +167,11 @@ class SegItemType extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -180,7 +200,11 @@ class SegAP extends BaseSeg2Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -209,7 +233,11 @@ class SegHT extends BaseSeg2Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -238,7 +266,11 @@ class SegDP extends BaseSeg2Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -267,7 +299,11 @@ class SegEV extends BaseSeg2Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -296,7 +332,11 @@ class SegWeaponEff extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -323,7 +363,11 @@ class SegHitChance extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -352,7 +396,11 @@ class SegAttRange extends BaseSegRange {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; }  
@@ -385,7 +433,11 @@ class SegItemEffect extends BaseSeg3Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
@@ -414,7 +466,11 @@ class SegEffectRange extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
@@ -449,7 +505,11 @@ class SegTarget extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
@@ -482,7 +542,11 @@ class SegRange extends BaseSeg1Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
@@ -511,7 +575,11 @@ class SegPrice extends BaseSeg2Byte {
     }
     
     @Override
-    public final String[] getNameList(){ return NAMES; }
+    public final String[] getNameList(){ 
+        if (NAMES!= null) {
+            return NAMES.clone();} 
+        else {return null;} 
+    }
     
     @Override
     public final String getSegName(){ return SEGNAME; } 

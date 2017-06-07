@@ -47,12 +47,12 @@ public abstract class BaseSeg {
     private String recordName;
     /** 字段在文件中的偏移地址 */
     private long fileOffset;
-    /** 字段在读入数据段中的偏移地址 */
-    private int blockOffset;
-    /** 数据段起始地址 */
-    private long blockStart;
-    /** 对应的数据段字节缓冲区 */
-    private MappedByteBuffer blockBuffer;
+    /** 字段在缓冲区中的偏移地址 */
+    private int bufferOffset;
+    /** 缓冲区在文件中起始地址 */
+    private long bufferStart;
+    /** 对应的文件字节缓冲区 */
+    private MappedByteBuffer fileBuffer;
     /** 字段字节数据 */
     private byte[] segBytes;
     /** 字段最大允许值 */
@@ -81,7 +81,7 @@ public abstract class BaseSeg {
         this.setRecordName(rName);
         this.linkBuffer(fBuffer);
         this.setFileOffset(fOffset);
-        this.setBlockStart(bStart);
+        this.setBufferStart(bStart);
         this.defaultValue = -1;
         this.recommendValue = -1;
     }
@@ -147,15 +147,15 @@ public abstract class BaseSeg {
         this.setRecordName(rName);
         this.linkBuffer(fBuffer);
         this.setFileOffset(fOffset);
-        this.setBlockStart(bStart);
+        this.setBufferStart(bStart);
     }
     
     /** 
      * 链接数据缓冲区 
-     * @param bBuffer: 缓冲区指针 
+     * @param fBuffer: 缓冲区指针 
      */
-    public final void linkBuffer(MappedByteBuffer bBuffer){
-        this.blockBuffer = bBuffer;
+    public final void linkBuffer(MappedByteBuffer fBuffer){
+        this.fileBuffer = fBuffer;
     }
 
     /** 
@@ -163,7 +163,7 @@ public abstract class BaseSeg {
      * @return MappedByteBuffer: 缓冲区指针 
      */
     public final MappedByteBuffer getBuffer(){
-        return this.blockBuffer;
+        return this.fileBuffer;
     }
     
     /** 
@@ -203,7 +203,7 @@ public abstract class BaseSeg {
      * 从缓冲区指定地址填充segBytes 
      */
     public final void read(){
-        blockBuffer.position(blockOffset);
+        fileBuffer.position(bufferOffset);
         seqRead();
     }
     
@@ -212,8 +212,8 @@ public abstract class BaseSeg {
      * @throws NullPointerException: 没有连接到缓冲区则报错
      */
     public final void seqRead() throws NullPointerException {
-        if(blockBuffer != null) {
-            blockBuffer.get(segBytes);
+        if(fileBuffer != null) {
+            fileBuffer.get(segBytes);
             updateValue();
         } else {
             throw(new NullPointerException("Block buffer not connected!"));
@@ -225,8 +225,8 @@ public abstract class BaseSeg {
      * @throws NullPointerException: 没有连接到缓冲区则报错
      */
     public final void write() throws NullPointerException{
-        if(blockBuffer != null) {
-            blockBuffer.position(blockOffset);
+        if(fileBuffer != null) {
+            fileBuffer.position(bufferOffset);
             seqWrite();
         } else {
             throw(new NullPointerException("Block buffer not connected!"));
@@ -237,7 +237,7 @@ public abstract class BaseSeg {
      * 将segBytes按当前地址写回缓冲区 
      */
     public final void seqWrite(){
-        blockBuffer.put(segBytes);
+        fileBuffer.put(segBytes);
     }
     
     /** 修改value的值并update segBytes
@@ -407,7 +407,7 @@ public abstract class BaseSeg {
         docMap.put("记录名称:", recordName);
         docMap.put("字段名称:", getSegName());
         docMap.put("文件偏移:", String.format("0x%06X", fileOffset));
-        docMap.put("数段偏移:", String.format("0x%06X", blockOffset));
+        docMap.put("数段偏移:", String.format("0x%06X", bufferOffset));
         docMap.put("字节长度:", String.valueOf(getLength()));
         docMap.put("字段内容:", displayString());
         docMap.put("原始数值:", String.valueOf(defaultValue));
@@ -505,30 +505,30 @@ public abstract class BaseSeg {
     /** 胶水方法:数据段偏移地址
      * @return long: 字段在数据段中的偏移地址 
      */
-    public final int getBlockOffset(){
-        return this.blockOffset;
+    public final int getBufferOffset(){
+        return this.bufferOffset;
     }
     
     /** 胶水方法:数据段偏移地址
      * @param bOffset: 字段在数据段中的偏移地址
      */
-    public final void setBlockOffset(int bOffset){
-        this.blockOffset = bOffset;
+    public final void setBufferOffset(int bOffset){
+        this.bufferOffset = bOffset;
     }
     
     /** 胶水方法:数据段起始地址
      * @return long: 字段在数据段中的偏移地址 
      */
-    public final long getBlockStart(){
-        return this.blockStart;
+    public final long getBufferStart(){
+        return this.bufferStart;
     }
        
     /** 胶水方法:数据段偏移地址
      * @param bStart: 数据段开始的偏移地址 
      */
-    public final void setBlockStart(long bStart){
-        this.blockStart = bStart;
-        this.blockOffset = (int)(this.fileOffset - bStart);
+    public final void setBufferStart(long bStart){
+        this.bufferStart = bStart;
+        this.bufferOffset = (int)(this.fileOffset - bStart);
     }
     
    
