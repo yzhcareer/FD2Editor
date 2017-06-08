@@ -55,7 +55,12 @@ public class FD2Editor {
             SEGTYPE.命中率, SEGTYPE.攻击距离, SEGTYPE.使用效果, SEGTYPE.施放范围, SEGTYPE.作用对象, SEGTYPE.影响范围, SEGTYPE.价格, SEGTYPE.未使用, SEGTYPE.未使用};
         rc1.initRecord("FD.bin", fBuffer, "物品", "长剑", 0x00792d8, 0, tList);
         rc1.read();
-        System.out.print(rc1);
+        //System.out.print(rc1);
+        
+        Block b1 = new Block();
+        b1.initBlock(RECORDTYPE.物品, fBuffer, 0);
+        b1.read();
+        System.out.print(b1);
    
     }    
 }

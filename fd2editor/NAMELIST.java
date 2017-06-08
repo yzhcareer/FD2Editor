@@ -462,7 +462,7 @@ public final class NAMELIST {
                                             "传送术",
                                             "攻击法术"  };
     
-    public static final String[] ITEMTYPE = {  
+    public static final String[] ITEMTYPE = {   "无",
                                                 "剑",
                                                 "刀",
                                                 "枪",

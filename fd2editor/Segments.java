@@ -155,7 +155,7 @@ class SegItemType extends BaseSeg1Byte {
         NAMES = NAMELIST.ITEMTYPE;
     }
     
-    public SegItemType(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+    public SegItemType(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         if(NAMES!=null){
             setMax(NAMES.length - 1);

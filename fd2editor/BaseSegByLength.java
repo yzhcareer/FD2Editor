@@ -29,6 +29,7 @@ abstract class BaseSeg1Byte extends BaseSeg {
     public BaseSeg1Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
+        setMaxMin();
     }
     
     public BaseSeg1Byte(){
@@ -60,6 +61,7 @@ abstract class BaseSeg2Byte extends BaseSeg {
     public BaseSeg2Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
+        setMaxMin();
     }
         
     public BaseSeg2Byte(){
@@ -92,6 +94,7 @@ abstract class BaseSeg3Byte extends BaseSeg {
     public BaseSeg3Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
+        setMaxMin();
     }
     
     public BaseSeg3Byte(){
@@ -123,6 +126,7 @@ abstract class BaseSeg4Byte extends BaseSeg {
     public BaseSeg4Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
+        setMaxMin();
     }
     
     public BaseSeg4Byte(){

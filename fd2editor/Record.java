@@ -208,13 +208,13 @@ public class Record {
    
     /**
      * 把纪录中的各个字段输出成表格模式
-     * @return String: 表格模式的字符串
+     * @return StringBuilder: 表格模式的字符串
      */
     public final StringBuilder docString(){
         int tWidth = BaseSeg.getTitleWidth();
         StringBuilder dString = new StringBuilder(BaseSeg.alignString(recordName, 
                                                                       BaseSeg.ALIGN.CENTER,
-                                                                      tWidth, '.'));
+                                                                      tWidth, '_'));
         LinkedHashMap<String, String> [] docArray = new LinkedHashMap[length];
         for (int i=0; i<length; i++){
             docArray[i] = segList[i].alignedDocStringMap();
@@ -223,7 +223,7 @@ public class Record {
             dString.append(":  The Record is Empty!");
         } else {
             for (BaseSeg bSeg: segList) {
-                dString.append(bSeg.alignString(bSeg.getSegName(), BaseSeg.ALIGN.CENTER, '.'));
+                dString.append(bSeg.alignString(bSeg.getSegName(), BaseSeg.ALIGN.CENTER, '_'));
             }
             dString.append('\n');
             docArray[0].keySet().forEach((keyString) -> {
@@ -329,7 +329,7 @@ public class Record {
     /** 胶水方法:数据段偏移地址
      * @return long: 字段在缓冲区中的偏移地址 
      */
-    public final long getBlockOffset(){
+    public final long getBufferOffset(){
         return this.bufferOffset;
     }
     

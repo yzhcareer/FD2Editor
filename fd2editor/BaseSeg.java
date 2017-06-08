@@ -24,7 +24,7 @@ public abstract class BaseSeg {
     // private String SEGNAME;
     // private String[] NAMES;
     // private int COLWIDTH;
-    
+     
     /** 不同长度字节段允许的最大值, 转换到integer可以保证是无符号正值 */
     static final int[] MAXS = {0xFF, 0xFFFF, 0xFFFFFF, 0x7FFFFFFF};
     /** 未初始化提示信息 */
@@ -66,6 +66,17 @@ public abstract class BaseSeg {
     /** 字段数值 */
     private int value;
     
+    /** 选择输出的键值 */
+    public static enum DOCKEY {
+        源文件名, 数据名称, 记录名称, 字段名称, 文件偏移, 数段偏移, 字节长度, 
+        字段内容, 原始数值, 当前数值, 优化数值, 字节数据, 最大数值;
+        
+        @Override
+        public String toString(){
+            return this.name() + ":";
+        }
+    };  
+    
     /** 
      * 构造器      
      * @param fName: 文件名
@@ -103,8 +114,7 @@ public abstract class BaseSeg {
      */
     public BaseSeg(){
         this(NOTINTIATED, null, NOTINTIATED, NOTINTIATED, 0, 0);
-    }
-    
+    }  
     
     /** 
      * 抽象方法: segName getter
@@ -309,7 +319,7 @@ public abstract class BaseSeg {
         if(getNameList() == null){
             return String.valueOf(value);
         } else {
-            return getNameList()[Math.min(getMax(), value)];
+            return getNameList()[Math.min(getMax(),value)];
         }
     }
     
@@ -400,20 +410,21 @@ public abstract class BaseSeg {
     /** 创建docString, 用LinkedHashMap格式方便子类添加
      * @return LinkedHashMap: 包含需要输出的键值对
      */
-    public LinkedHashMap docStringMap(){
-        LinkedHashMap<String, String> docMap = new LinkedHashMap<>();
-        docMap.put("源文件名:", fileName);
-        docMap.put("数据名称:", blockName);
-        docMap.put("记录名称:", recordName);
-        docMap.put("字段名称:", getSegName());
-        docMap.put("文件偏移:", String.format("0x%06X", fileOffset));
-        docMap.put("数段偏移:", String.format("0x%06X", bufferOffset));
-        docMap.put("字节长度:", String.valueOf(getLength()));
-        docMap.put("字段内容:", displayString());
-        docMap.put("原始数值:", String.valueOf(defaultValue));
-        docMap.put("当前数值:", String.valueOf(value));
-        docMap.put("优化数值:", String.valueOf(recommendValue));
-        docMap.put("字节数据:", Arrays.toString(segBytes2Hex()));
+    public final LinkedHashMap docStringMap(){
+        LinkedHashMap<DOCKEY, String> docMap = new LinkedHashMap<>();
+        docMap.put(DOCKEY.源文件名, fileName);
+        docMap.put(DOCKEY.数据名称, blockName);
+        docMap.put(DOCKEY.记录名称, recordName);
+        docMap.put(DOCKEY.字段名称, getSegName());
+        docMap.put(DOCKEY.文件偏移, String.format("0x%06X", fileOffset));
+        docMap.put(DOCKEY.数段偏移, String.format("0x%06X", bufferOffset));
+        docMap.put(DOCKEY.字节长度, String.valueOf(getLength()));
+        docMap.put(DOCKEY.字段内容, displayString());
+        docMap.put(DOCKEY.原始数值, String.valueOf(defaultValue));
+        docMap.put(DOCKEY.当前数值, String.valueOf(value));
+        docMap.put(DOCKEY.优化数值, String.valueOf(recommendValue));
+        docMap.put(DOCKEY.最大数值, String.valueOf(getMax()));
+        docMap.put(DOCKEY.字节数据, Arrays.toString(segBytes2Hex()));
         return docMap;
     }
     
@@ -421,11 +432,11 @@ public abstract class BaseSeg {
      * 格式化docStringMap
      * @return LinkedHashMap: 格式化好的docStringMap
      */
-    public LinkedHashMap alignedDocStringMap(){
-        LinkedHashMap<String, String> docMap = docStringMap();
+    public final LinkedHashMap alignedDocStringMap(){
+        LinkedHashMap<DOCKEY, String> docMap = docStringMap();
         LinkedHashMap<String, String> alignedDocMap = new LinkedHashMap<>();
         docMap.entrySet().forEach((entry) -> {
-            alignedDocMap.put(alignString(entry.getKey(), ALIGN.LEFT, getTitleWidth()),
+            alignedDocMap.put(alignString(entry.getKey().toString(), ALIGN.LEFT, getTitleWidth()),
                               alignString(entry.getValue(), ALIGN.RIGHT));
         });
         return alignedDocMap;
@@ -550,7 +561,22 @@ public abstract class BaseSeg {
      * @param mValue: 更新最大值 
      */
     public final void setMax(int mValue){
-        this.max = Math.min(mValue, MAXS[getLength()-1]);
+        if(getNameList()==null){
+            this.max = Math.min(mValue, MAXS[getLength()-1]);
+        } else {
+            this.max = getNameList().length - 1;
+        }
+    }
+    
+    /** 胶水方法:初始化最大最小值
+     */
+    public final void setMaxMin(){
+        if(getNameList()==null){
+            this.max = MAXS[getLength()-1];
+        } else {
+            this.max = getNameList().length - 1;
+        }
+        this.min = 0;
     }
    
     /** 胶水方法:允许的最小值,
@@ -564,7 +590,7 @@ public abstract class BaseSeg {
      * @param mValue: 更新最小值 
      */
     public final void setMin(int mValue){
-        this.max = Math.max(mValue, 0);
+        this.min = Math.max(mValue, 0);
     }
    
     /** 胶水方法:default值
