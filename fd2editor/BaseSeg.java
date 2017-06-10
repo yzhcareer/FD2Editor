@@ -27,6 +27,8 @@ public abstract class BaseSeg {
      
     /** 不同长度字节段允许的最大值, 转换到integer可以保证是无符号正值 */
     static final int[] MAXS = {0xFF, 0xFFFF, 0xFFFFFF, 0x7FFFFFFF};
+    /** 名称列表越界的时候给出的缺省字符串 */
+    static final String VOIDNAME = "无";
     /** 未初始化提示信息 */
     static final String NOTINTIATED = "Not Initiated";
     /** 字段输出的打印对齐方式 */
@@ -318,8 +320,10 @@ public abstract class BaseSeg {
     public String displayString(){
         if(getNameList() == null){
             return String.valueOf(value);
+        } else if(value >= getNameList().length) {
+            return VOIDNAME;
         } else {
-            return getNameList()[Math.min(getMax(),value)];
+            return getNameList()[value];
         }
     }
     
@@ -561,21 +565,13 @@ public abstract class BaseSeg {
      * @param mValue: 更新最大值 
      */
     public final void setMax(int mValue){
-        if(getNameList()==null){
-            this.max = Math.min(mValue, MAXS[getLength()-1]);
-        } else {
-            this.max = getNameList().length - 1;
-        }
+        this.max = Math.min(mValue, MAXS[getLength()-1]);
     }
     
     /** 胶水方法:初始化最大最小值
      */
     public final void setMaxMin(){
-        if(getNameList()==null){
-            this.max = MAXS[getLength()-1];
-        } else {
-            this.max = getNameList().length - 1;
-        }
+        this.max = MAXS[getLength()-1];
         this.min = 0;
     }
    

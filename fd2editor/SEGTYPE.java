@@ -55,24 +55,24 @@ public enum SEGTYPE {
     // 施放距离(1)
     // 影响范围(1, 3)
     /** 单字节, 法力消耗值 */
-    法力消耗(),
+    法力消耗(SegMPCost.class),
     // 作用对象(1, NAMELIST.ALIGNMENT)
     
     /* 人物数据段, 每个纪录24 bytes */
     /** 单字节, 角色种族 */
-    种族(),
+    种族(SegRace.class),
     /** 单字节, 角色职业 */
-    职业(),
+    职业(SegClass.class),
     /** 单字节, 角色出场等级, 有符号, 最大127 */
-    等级(),
+    等级(SegLevel.class),
     /** 双字节, 角色出场生命值 */
-    生命(),
+    生命(SegHP.class),
     /** 双字节, 角色出场法力值 */
-    法力(),
+    法力(SegMP.class),
     /** 单字节, 角色出场移动力 */
-    移动(),
+    移动(SegMV.class),
     /** 四字节, 角色出场已知魔法, 用bit位表示 */
-    已知魔法(),
+    已知魔法(SegKnownMagic.class),
     // 物品(1) x 6
     // 未使用(1) x 6
     

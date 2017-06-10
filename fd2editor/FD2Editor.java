@@ -58,9 +58,10 @@ public class FD2Editor {
         //System.out.print(rc1);
         
         Block b1 = new Block();
-        b1.initBlock(RECORDTYPE.物品, fBuffer, 0);
+        b1.initBlock(RECORDTYPE.角色, fBuffer, 0);
         b1.read();
         System.out.print(b1);
+        System.out.print(b1.getBlockLength());
    
     }    
 }

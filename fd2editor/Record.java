@@ -225,15 +225,16 @@ public class Record {
             for (BaseSeg bSeg: segList) {
                 dString.append(bSeg.alignString(bSeg.getSegName(), BaseSeg.ALIGN.CENTER, '_'));
             }
-            dString.append('\n');
+            dString.append("\n");
             docArray[0].keySet().forEach((keyString) -> {
                 dString.append(keyString);
                 for (LinkedHashMap dMap: docArray){
                     dString.append(dMap.get(keyString));
                 }
-                dString.append('\n');
+                dString.append("\n");
             });
         }
+        dString.append("\n");
         return dString;
     }
     

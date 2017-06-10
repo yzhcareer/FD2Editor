@@ -26,6 +26,8 @@ public class Block {
     private int length;
     /** 数据段纪录字节长度 */
     private int recordLength;
+    /** 数据段总长度 */
+    private int blockLength;
     /** 纪录的名字列表 */
     private String[] nameList;
     /** 纪录列表, 因为有重复键值比如未使用,所以没法用LinkedHashMap */
@@ -51,6 +53,7 @@ public class Block {
         this.setNameList(rType.getNameList());
         this.setSegTypeList(rType.getSegList()); 
         this.linkBuffer(fBuffer);
+        this.setBlockLength(rType.getBlockLength());
         this.initRecords();
     }
     
@@ -74,6 +77,7 @@ public class Block {
         this.setNameList(rType.getNameList());
         this.setSegTypeList(rType.getSegList()); 
         this.linkBuffer(fBuffer);
+        this.setBlockLength(rType.getBlockLength());
         this.initRecords();
     }
      
@@ -106,7 +110,7 @@ public class Block {
                 this.recordLength = this.recordList[i].getByteLength();
             }
         }
-        
+        this.setBlockLength(this.length * this.recordLength);
     }
     
     /**
@@ -137,13 +141,15 @@ public class Block {
     public final StringBuilder docString(BaseSeg.DOCKEY docKey){
         int tWidth = BaseSeg.getTitleWidth();
         LinkedHashMap<BaseSeg.DOCKEY, String> docMap;
-        StringBuilder titleString = new StringBuilder(BaseSeg.alignString(blockName, BaseSeg.ALIGN.CENTER,
-                                                                          tWidth, '_'));  
+        StringBuilder titleString = new StringBuilder();
+        titleString.append((BaseSeg.alignString("序号", BaseSeg.ALIGN.CENTER, tWidth, '_'))); 
+        titleString.append(BaseSeg.alignString(blockName, BaseSeg.ALIGN.CENTER,tWidth, '_'));  
         StringBuilder dString = new StringBuilder();
         if(length == 0 || recordLength == 0) {
             titleString.append(":  The Block is Empty!");
         } else {
             for(int i =0;i<length;i++){
+                dString.append(BaseSeg.alignString(String.format("%02X", i), BaseSeg.ALIGN.RIGHT, tWidth));
                 dString.append(BaseSeg.alignString(nameList[i], BaseSeg.ALIGN.LEFT, tWidth));
                 for(BaseSeg bSeg: recordList[i].getSegList()){
                     if(i==0){
@@ -152,10 +158,11 @@ public class Block {
                     docMap = bSeg.docStringMap();
                     dString.append(bSeg.alignString(docMap.get(docKey), BaseSeg.ALIGN.RIGHT));         
                 }
-                dString.append('\n');
+                dString.append("\n");
             }
-            titleString.append('\n');
+            titleString.append("\n");
         }
+        dString.append("\n");
         return titleString.append(dString);
     }
     
@@ -164,7 +171,7 @@ public class Block {
      * @return StringBuilder: 表格模式的字符串
      */
     public StringBuilder docString(){
-        return docString(BaseSeg.DOCKEY.字节数据);
+        return docString(BaseSeg.DOCKEY.字段内容);
     }
     
     /** 改写toString
@@ -349,6 +356,24 @@ public class Block {
             for(Record record: recordList) {
                 record.setBufferStart(bStart);
             }
+        }
+    }
+        
+    /** 胶水方法:数据总长度
+     * @return int: 数据段总长度,如果是0则设为整个文件的长度
+     */
+    public final int getBlockLength(){
+        return this.blockLength;
+    }
+    
+    /** 胶水方法:数据总长度
+     * @param bLength: 数据段总长度
+     */
+    public final void setBlockLength(int bLength){
+        if (bLength == 0 && this.fileBuffer != null){
+            this.blockLength = this.fileBuffer.capacity();
+        } else {
+            this.blockLength = bLength;
         }
     }
 }
