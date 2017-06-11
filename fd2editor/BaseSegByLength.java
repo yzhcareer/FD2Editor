@@ -6,10 +6,6 @@
 package fd2editor;
 import java.nio.MappedByteBuffer;
 
-/**
- *
- * @author CIDER
- */
 
 /**
  * 单字节数据段模版, 固定字节长度和栏目宽度为类静态属性, 
@@ -29,7 +25,6 @@ abstract class BaseSeg1Byte extends BaseSeg {
     public BaseSeg1Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
-        setMaxMin();
     }
     
     public BaseSeg1Byte(){
@@ -61,7 +56,6 @@ abstract class BaseSeg2Byte extends BaseSeg {
     public BaseSeg2Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
-        setMaxMin();
     }
         
     public BaseSeg2Byte(){
@@ -94,7 +88,6 @@ abstract class BaseSeg3Byte extends BaseSeg {
     public BaseSeg3Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
-        setMaxMin();
     }
     
     public BaseSeg3Byte(){
@@ -119,14 +112,13 @@ abstract class BaseSeg4Byte extends BaseSeg {
     private static final int COLWIDTH;
      
     static {
-        LENGTH = 3;
+        LENGTH = 4;
         COLWIDTH = getByteWidth() * LENGTH + getBytePadding();
     }
     
     public BaseSeg4Byte(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         initSegBytes(LENGTH);
-        setMaxMin();
     }
     
     public BaseSeg4Byte(){

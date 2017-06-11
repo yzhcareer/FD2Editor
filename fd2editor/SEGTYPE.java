@@ -42,7 +42,7 @@ public enum SEGTYPE {
     /** 单字节, 高位1表示直线,否则是菱形范围,低四位元表示实际半径 */
     施放范围(SegEffectRange.class),  
     /** 单字节, 作用对象, 修改无效 */
-    作用对象(SegTarget.class),
+    阵营(SegAlign.class),
     /** 单字节, 作用半径, 最大为3 */
     影响范围(SegRange.class),
     /** 双字节, 物品价格 */
@@ -83,27 +83,27 @@ public enum SEGTYPE {
     
     /* 升级属性数据段, 每个纪录11 bytes */
     /** 双字节, 攻击增长最小/最大值 */
-    攻击增长(),
+    攻击增长(SegAPInc.class),
     /** 双字节, 防御增长最小/最大值 */
-    防御增长(),
+    防御增长(SegMPInc.class),
     /** 双字节, 速度增长最小/最大值 */
-    速度增长(),
+    速度增长(SegEVInc.class),
     /** 双字节, 生命增长最小/最大值 */
-    生命增长(),
+    生命增长(SegHPInc.class),
     /** 双字节, 法力增长最小/最大值 */
-    法力增长(),
+    法力增长(SegMPInc.class),
     /** 单字节, 可学习法术列表 */
-    法术列表(),
+    法术序列(SegMagicSeq.class),
     
     /* 法术学习数据段, 每个纪录12 bytes */
     // 等级(1)
     /** 单字节, 法术名称 */
-    法术(),
+    法术(SegMagic.class),
     // repeat 6 times
     
     /* 职业魔防数据段, 每个纪录4 bytes */
     /** 四字节, 应该分火抗, 电抗, 地抗, 魔抗, (10-x)/10 比如 7 表示 30% 抗性 */
-    魔抗(),
+    魔防(SegMagicResist.class),
     
     /* 职业爆击率数据段, 每个纪录1 bytes */
     //几率(1)
@@ -112,33 +112,33 @@ public enum SEGTYPE {
     // 种族(1, NAMELIST.RACE),
     // 职业(1, NAMELIST.CLASS),
     /** 单字节, 敌人每级生命增长 */
-    敌体增长(),
+    敌体增长(SegEnemyHPInc.class),
     /** 单字节, 敌人每级法力增长 */
-    敌法增长(),
+    敌法增长(SegEnemyMPInc.class),
     /** 单字节, 敌人每级攻击增长 */
-    敌攻增长(),
+    敌攻增长(SegEnemyAPInc.class),
     /** 单字节, 敌人每级防御增长 */
-    敌防增长(),
+    敌防增长(SegEnemyDPInc.class),
     /** 单字节, 敌人每级速度增长 */
-    敌速增长(),
+    敌速增长(SegEnemyEVInc.class),
     // 移动(1)
     /** 单字节, 敌人对应经验值 */
-    敌经验(),
+    敌经验(SegEnemyExp.class),
     
     /* 敌军出场数据段, 每个纪录26 bytes */
     /** 单字节, 敌军友军我军 */
-    阵营(),
+    //阵营(),
     /** 单字节, 肖像 */
-    肖像(),
+    肖像(SegPotrait.class),
     // 种族(1,  NAMELIST.RACE)
     // 职业(1, NAMELIST.CLASS)
     // 等级(1, 127)
     // 物品(1, NAMELIST.ITEM) x 8
     // 法术(1, NAMELIST.MAGIC) x 8
     /** 单字节, 出场时的回合数 */
-    回合(),
+    回合(SegRound.class),
     /** 四字节, 第一字节是0则是物品,1则是金钱, 后三字节, 如果是物品则第一字节是编号, 如果是金钱则是数目 */
-    掉落();
+    掉落(SegDrop.class);
     
     private final Class<?> newSeg;
     

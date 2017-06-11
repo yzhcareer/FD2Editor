@@ -29,6 +29,8 @@ public abstract class BaseSeg {
     static final int[] MAXS = {0xFF, 0xFFFF, 0xFFFFFF, 0x7FFFFFFF};
     /** 名称列表越界的时候给出的缺省字符串 */
     static final String VOIDNAME = "无";
+    /** max的几种可能, 无名称列表, 有名称列表并以名称列表为边界, 有名称列表不以列表为边界 */
+    public static enum MAXMODE {NUM, LISTBOUND, LISTUNBOUND};
     /** 未初始化提示信息 */
     static final String NOTINTIATED = "Not Initiated";
     /** 字段输出的打印对齐方式 */
@@ -186,29 +188,46 @@ public abstract class BaseSeg {
         segBytes = new byte[size];
     }
     
+    /**
+     * 静态方法把字节数组按低位在前转化为整型
+     * @param sBytes: byte数组
+     * @return int: 转化后的整型变量
+     */
+    public static final int bytes2Int(byte[] sBytes){
+        int vNumber = 0;
+        for (int i= sBytes.length-1; i>=0; i--){
+            vNumber = vNumber << 8;
+            vNumber += sBytes[i] & 0xFF;
+        }
+        return vNumber & MAXS[3];
+    }
+    
+    /**
+     * 静态方法把整型变量转化为byte数组
+     * @param vNumber: 整型变量
+     * @return  byte[]: byte数组
+     */
+    public static final byte[] int2Bytes(int vNumber){
+        byte[] bArray = new byte[4];
+        for(int i=0;i<4;i++){
+            bArray[i] = (byte)(vNumber & 0xFF);
+            vNumber = vNumber >> 8;    
+        }
+        return bArray;
+    }
+    
     /** 
      * 根据value的值改写segBytes 
      */
     private void updateSegBytes(){
-        int vNumber = value;
-        for(int i=0;i<getLength();i++){
-            segBytes[i] = (byte)(vNumber & 0xFF);
-            vNumber = vNumber >> 8;    
-        }
+        segBytes = int2Bytes(value);
     }
     
     /** 
      * 根据segBytes的值改写value 
      */
     private void updateValue(){
-        value = 0;
-        for(int i=getLength()-1;i>=0;i--){
-            value = value << 8;
-            value += segBytes[i] & 0xFF;
-        }
-        if(value < 0){
-            value = MAXS[getLength()-1];
-        }
+        value = bytes2Int(getSegBytes());
     }   
     
     /** 
@@ -261,13 +280,15 @@ public abstract class BaseSeg {
     
     /** 
      * 修改制定value的值并update segBytes
+     * 在物品Seg中要改写因为要允许FF表示空值
      * @param whichValue: 需要更新哪个值
      * @param sValue: 修改目标值 
      */ 
-    public final void setValue(VALUE whichValue, int sValue){
+    public void setValue(VALUE whichValue, int sValue){
         if (sValue > max) {
             sValue = max;
-        } else if (sValue < min) {
+        } 
+        if (sValue < min) {
             sValue = min;
         }
         switch(whichValue){
@@ -561,18 +582,28 @@ public abstract class BaseSeg {
         return this.max;
     }
    
-    /** 胶水方法:允许的最大值,
+    /** 胶水方法:允许的最大值,只对数值型字段有效
      * @param mValue: 更新最大值 
      */
     public final void setMax(int mValue){
-        this.max = Math.min(mValue, MAXS[getLength()-1]);
+        this.max = Math.min(mValue, MAXS[getLength() -1]);
     }
     
-    /** 胶水方法:初始化最大最小值
+    /** 按字段内容规定最大值
+     * @param mMode: 最大值的规定方式
      */
-    public final void setMaxMin(){
-        this.max = MAXS[getLength()-1];
-        this.min = 0;
+    public final void setMax(MAXMODE mMode){
+        switch(mMode) {
+            case LISTUNBOUND:
+                this.max = MAXS[getLength() -1];
+                break;
+            case LISTBOUND:
+                this.max = getNameList().length - 1;
+                break;
+            default:
+                this.max = MAXS[getLength() -1];
+                break;   
+        }
     }
    
     /** 胶水方法:允许的最小值,
@@ -586,7 +617,7 @@ public abstract class BaseSeg {
      * @param mValue: 更新最小值 
      */
     public final void setMin(int mValue){
-        this.min = Math.max(mValue, 0);
+        this.min = Math.max(mValue, getMin());
     }
    
     /** 胶水方法:default值

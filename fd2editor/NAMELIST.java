@@ -370,7 +370,8 @@ public final class NAMELIST {
                                             "暗之眼",
                                             "冰之眼",
                                             "火之眼"  };
-    public static final String[] MAGIC = {  "火炎术",
+    public static final String[] MAGIC = {  "无",
+                                            "火炎术",
                                             "烈炎术",
                                             "炎龙术",
                                             "天火术",
@@ -436,6 +437,8 @@ public final class NAMELIST {
                                             "未使用",
                                             "达可赛"};
     
+    public static final String[] CLASSNODRAGON = Arrays.copyOfRange(CLASS, 1, CLASS.length);
+    
     public static final String[] RACE = {   "无",
                                             "人类",
                                             "精灵",
@@ -447,7 +450,7 @@ public final class NAMELIST {
                                             "兽人",
                                             "其他"  };
     
-    public static final String[] ALIGNMENT = {"敌方", "友军", "我方"};
+    public static final String[] ALIGNMENT = {"敌军", "友军", "我军"};
     public static final String[] RANGETYPE = {"范围", "直线"};
     public static final String[] DROP = {"物品", "金钱"};
     public static final String[] WEAPONEFFCT = {"无",
@@ -518,6 +521,27 @@ public final class NAMELIST {
                                                 "宝石",
                                                 "道具"};
     
+    public static final String[] MAGICSEQ = {   "悠妮(法师)",
+                                                "玛琳(僧侣)",
+                                                "索菲亚(僧侣)",
+                                                "珊(法师)",
+                                                "索尔(剑圣)",
+                                                "密蒂(剑圣)",
+                                                "铁诺(剑圣)",
+                                                "悠妮(大法师)",
+                                                "珊(大法师)",
+                                                "玛琳(祭师)",
+                                                "索尔(英雄)",
+                                                "玛琳(圣者)",
+                                                "索菲亚(圣者)",
+                                                "珊(圣者)",
+                                                "悠妮(圣者)",
+                                                "哈诺(魔战士)",
+                                                "哈瓦特(魔战士)",
+                                                "达克塞(魔族)",
+                                                "索菲亚(祭师)",
+                                                "悠妮(召唤师)"  };
+    
     public static final String[] CHAPTER = {"第一关",
                                             "第二关",
                                             "第三关",
@@ -548,5 +572,10 @@ public final class NAMELIST {
                                             "第二十八关",
                                             "第二十九关",
                                             "第三十关"  };
+    
+    public static final int[] GOODITEM = {0x00, 0x0b, 0x14, 0x1d, 0x21, 0x2b, 0x2c, 0x33, 0x37, 0x3d, 0x3e, 0x47, 0x48, 0x4b,
+                                          0x4d, 0x4f, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x64, 0x65, 0x6b, 
+                                          0x83, 0x8f, 0x9b, 0xa3, 0xab, 0xb1, 0xba, 0xc6, 0xc7, 0xc8, 0xcd, 0xd1, 0xd2, 0xd3,
+                                          0xd4, 0xd5, 0xd6};
 
 }

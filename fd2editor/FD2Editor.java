@@ -10,6 +10,7 @@ import java.nio.MappedByteBuffer;
 import java.io.FileNotFoundException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 /**
  *
@@ -24,12 +25,12 @@ public class FD2Editor {
      * @throws java.lang.NoSuchMethodException
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, NoSuchMethodException{
-        String fileName = "../FD2.bin";
-        MappedByteBuffer fBuffer;
+        String fdName = "../FD2.bin";
+        MappedByteBuffer fdBuffer;
         try 
-        { RandomAccessFile fdFile = new RandomAccessFile(fileName, "rw");
-          FileChannel fChannel = fdFile.getChannel();
-          fBuffer = fChannel.map(FileChannel.MapMode.READ_WRITE, 0, fChannel.size());
+        { RandomAccessFile fdFile = new RandomAccessFile(fdName, "rw");
+          FileChannel fdChannel = fdFile.getChannel();
+          fdBuffer = fdChannel.map(FileChannel.MapMode.READ_WRITE, 0, fdChannel.size());
         } 
         catch(FileNotFoundException e) {
             System.out.println(e.getMessage());
@@ -39,29 +40,38 @@ public class FD2Editor {
             System.out.println(e.getMessage());
             throw e;
         }
-        fBuffer.order(ByteOrder.BIG_ENDIAN);
-        SegItem si = new SegItem("FD2.bin", fBuffer, "TestBlock", "TestRecord", 0x00792C1, 0x00792C1);
-        si.read();
-        //System.out.print(si);
-        
-        SEGTYPE st1 = SEGTYPE.未使用;
-        BaseSeg bs1 = st1.createSeg();
-        bs1.initSeg(fileName, fBuffer, "test", "test1", 890, 0);
-        bs1.read();
-        //System.out.print(bs1);
-        
-        Record rc1 = new Record();
-        SEGTYPE[] tList = {SEGTYPE.物品类型, SEGTYPE.攻击, SEGTYPE.命中, SEGTYPE.防御, SEGTYPE.速度, SEGTYPE.附加属性,
-            SEGTYPE.命中率, SEGTYPE.攻击距离, SEGTYPE.使用效果, SEGTYPE.施放范围, SEGTYPE.作用对象, SEGTYPE.影响范围, SEGTYPE.价格, SEGTYPE.未使用, SEGTYPE.未使用};
-        rc1.initRecord("FD.bin", fBuffer, "物品", "长剑", 0x00792d8, 0, tList);
-        rc1.read();
-        //System.out.print(rc1);
+        fdBuffer.order(ByteOrder.BIG_ENDIAN);
         
         Block b1 = new Block();
-        b1.initBlock(RECORDTYPE.角色, fBuffer, 0);
+        b1.initBlock(RECORDTYPE.法术, fdBuffer, 0);
         b1.read();
-        System.out.print(b1);
-        System.out.print(b1.getBlockLength());
-   
+        //System.out.print(b1);
+        //System.out.print(b1.getBlockLength());
+        
+        String fieldName = "../FDFIELD.dat";
+        MappedByteBuffer fieldBuffer;
+        try 
+        { RandomAccessFile fieldFile = new RandomAccessFile(fieldName, "rw");
+          FileChannel fieldChannel = fieldFile.getChannel();
+          fieldBuffer = fieldChannel.map(FileChannel.MapMode.READ_WRITE, 0, fieldChannel.size());
+        } 
+        catch(FileNotFoundException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+        fieldBuffer.order(ByteOrder.BIG_ENDIAN);
+        
+        Block stage1 = new Block();
+        for(String stage: Arrays.copyOfRange(NAMELIST.CHAPTER, 0, 5)){
+            stage1.initBlock(RECORDTYPE.valueOf(stage), fieldBuffer, 0);
+            stage1.read();
+            System.out.print(stage1);
+            System.out.print(stage1.getBlockLength());
+            System.out.print("\n");
+        }
     }    
 }

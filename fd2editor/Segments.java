@@ -5,6 +5,8 @@
  */
 package fd2editor;
 import java.nio.MappedByteBuffer;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  *
@@ -24,10 +26,12 @@ class SegUnused extends BaseSeg1Byte {
     
     public SegUnused(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegUnused(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -54,10 +58,12 @@ class SegFlip extends BaseSeg1Byte {
     
     public SegFlip(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegFlip(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -85,10 +91,12 @@ class SegSelector extends BaseSeg1Byte {
     
     public SegSelector(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegSelector(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -115,10 +123,34 @@ class SegItem extends BaseSeg1Byte {
     
     public SegItem(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTUNBOUND);
+        setMin(0);
     }
     
     public SegItem(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    /**
+     * 物品的设定值如果超出名称列表, 则设为FF. 然后调用父类的setValue()
+     * @param whichValue: 设定哪个值
+     * @param sValue: 目标值 
+     */
+    @Override
+    public final void setValue(VALUE whichValue, int sValue){
+        if (sValue >= getNameList().length) {
+            sValue = getMax();
+        } 
+        super.setValue(whichValue, sValue);
+    }
+    
+    /**
+     * 缺省设定当前值. 物品的设定值如果超出名称列表, 则设为FF. 然后调用父类的setValue()
+     * @param sValue: 目标值 
+     */
+    @Override
+    public final void setValue(int sValue){
+        this.setValue(VALUE.CURRENT, sValue);
     }
     
     @Override
@@ -145,10 +177,12 @@ class SegItemType extends BaseSeg1Byte {
     
     public SegItemType(String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegItemType(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -175,10 +209,12 @@ class SegAP extends BaseSeg2Byte {
     
     public SegAP(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegAP(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -205,10 +241,12 @@ class SegHT extends BaseSeg2Byte {
     
     public SegHT(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegHT(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -235,10 +273,12 @@ class SegDP extends BaseSeg2Byte {
     
     public SegDP(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegDP(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -265,10 +305,12 @@ class SegEV extends BaseSeg2Byte {
     
     public SegEV(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegEV(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -295,10 +337,12 @@ class SegWeaponEff extends BaseSeg1Byte {
     
     public SegWeaponEff(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegWeaponEff(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -325,11 +369,12 @@ class SegHitChance extends BaseSeg1Byte {
     
     public SegHitChance(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMin(0);
         setMax(100);
     }
     
     public SegHitChance(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -356,10 +401,12 @@ class SegAttRange extends BaseSegRange {
     
     public SegAttRange(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegAttRange(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -390,10 +437,12 @@ class SegItemEffect extends BaseSeg3Byte {
     
     public SegItemEffect(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegItemEffect(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -420,10 +469,12 @@ class SegEffectRange extends BaseSeg1Byte {
     
     public SegEffectRange(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegEffectRange(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     /** 
@@ -459,22 +510,24 @@ class SegEffectRange extends BaseSeg1Byte {
 }
  
 /** 单字节, 作用对象, 修改无效 */
-class SegTarget extends BaseSeg1Byte {
+class SegAlign extends BaseSeg1Byte {
     
     private static final String SEGNAME;
     private static final String[] NAMES;
      
     static {
-        SEGNAME = "作用对象";
+        SEGNAME = "阵营";
         NAMES = NAMELIST.ALIGNMENT;
     }
     
-    public SegTarget(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+    public SegAlign(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
-    public SegTarget(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    public SegAlign(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -486,12 +539,6 @@ class SegTarget extends BaseSeg1Byte {
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
-    
-    @Override
-    public String displayString(){
-        int rIndex = getValue() >> 4;
-        return getNameList()[Math.min(1, rIndex)];
-    }
 }
 
 /** 单字节, 影响范围, 最大为3 */
@@ -508,10 +555,11 @@ class SegRange extends BaseSeg1Byte {
     public SegRange(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         setMax(3);
+        setMin(0);
     }
     
     public SegRange(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -538,10 +586,12 @@ class SegPrice extends BaseSeg2Byte {
     
     public SegPrice(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegPrice(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -568,10 +618,12 @@ class SegMPCost extends BaseSeg1Byte {
     
     public SegMPCost(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegMPCost(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -598,10 +650,12 @@ class SegRace extends BaseSeg1Byte {
     
     public SegRace(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegRace(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -628,10 +682,12 @@ class SegClass extends BaseSeg1Byte {
     
     public SegClass(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
     }
     
     public SegClass(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -659,10 +715,11 @@ class SegLevel extends BaseSeg1Byte {
     public SegLevel(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
         setMax(127);
+        setMin(0);
     }
     
     public SegLevel(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -689,10 +746,12 @@ class SegHP extends BaseSeg2Byte {
     
     public SegHP(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegHP(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -719,10 +778,12 @@ class SegMP extends BaseSeg2Byte {
     
     public SegMP(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegMP(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -749,10 +810,12 @@ class SegMV extends BaseSeg1Byte {
     
     public SegMV(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
         super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegMV(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
     }
     
     @Override
@@ -767,24 +830,31 @@ class SegMV extends BaseSeg1Byte {
 }
 
 /** 四字节, 角色出场已知魔法, 用bit位表示 */
-class SegKnownMagic extends BaseSeg2Byte {
+class SegKnownMagic extends BaseSeg4Byte {
     
     private static final String SEGNAME;
     private static final String[] NAMES;
     private static final String[] MAGICS;
      
     static {
-        SEGNAME = "已知法术";
+        SEGNAME = "已知魔法";
         NAMES = null;
         MAGICS = NAMELIST.MAGIC;
     }
     
     public SegKnownMagic(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
-        super(fName, fBuffer, bName, rName, fOffset, bStart); 
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
     }
     
     public SegKnownMagic(){
-        super(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public String displayString(){
+        return Arrays.toString(this.segBytes2Hex());
     }
     
     @Override
@@ -796,4 +866,652 @@ class SegKnownMagic extends BaseSeg2Byte {
     
     @Override
     public final String getSegName(){ return SEGNAME; } 
+}
+
+/** 双字节, 攻击增长最小/最大值 */
+class SegAPInc extends BaseSegRange {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "攻击增长";
+        NAMES = null;
+    }
+    
+    public SegAPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegAPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 双字节, 防御增长最小/最大值 */
+class SegDPInc extends BaseSegRange {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "防御增长";
+        NAMES = null;
+    }
+    
+    public SegDPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegDPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 双字节, 速度增长最小/最大值 */
+class SegEVInc extends BaseSegRange {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "速度增长";
+        NAMES = null;
+    }
+    
+    public SegEVInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEVInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 双字节, 生命增长最小/最大值 */
+class SegHPInc extends BaseSegRange {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "生命增长";
+        NAMES = null;
+    }
+    
+    public SegHPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegHPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 双字节, 法力增长最小/最大值 */
+class SegMPInc extends BaseSegRange {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "法术增长";
+        NAMES = null;
+    }
+    
+    public SegMPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegMPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 可学习法术列表 */
+class SegMagicSeq extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "法术序列";
+        NAMES = NAMELIST.MAGICSEQ;
+    }
+    
+    public SegMagicSeq(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTUNBOUND);
+        setMin(0);
+    }
+    
+    public SegMagicSeq(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    /**
+     * 法术序列的设定值如果超出名称列表, 则设为FF. 然后调用父类的setValue()
+     * @param whichValue: 设定哪个值
+     * @param sValue: 目标值 
+     */
+    @Override
+    public final void setValue(VALUE whichValue, int sValue){
+        if (sValue >= getNameList().length) {
+            sValue = getMax();
+        } 
+        super.setValue(whichValue, sValue);
+    }
+    
+    /**
+     * 缺省设定当前值. 物品的设定值如果超出名称列表, 则设为FF. 然后调用父类的setValue()
+     * @param sValue: 目标值 
+     */
+    @Override
+    public final void setValue(int sValue){
+        this.setValue(VALUE.CURRENT, sValue);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 法术名称 */
+class SegMagic extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "法术";
+        NAMES = NAMELIST.MAGIC;
+    }
+    
+    public SegMagic(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
+    }
+    
+    public SegMagic(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 职业魔防数据段, 每个纪录4 bytes, 四字节, 后面三个似乎没用到 */
+class SegMagicResist extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    private static final byte BYTEMAX;
+    
+    static {
+        SEGNAME = "魔防";
+        NAMES = null;
+        BYTEMAX = 10;
+    }
+    
+    public SegMagicResist(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(BYTEMAX);
+        setMin(0);
+    }
+    
+    public SegMagicResist(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    /**
+     *  按四个位输出魔法抗性
+     * @return String: 魔法抗性组成的字符串
+     */
+    @Override
+    public final String displayString(){
+        return(String.format("%d%%,", (10-getValue())*10));
+    }
+    
+    @Override
+    public final void setValue(int sValue){
+        this.setValue(VALUE.CURRENT, sValue);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 敌人每级生命增长 */
+class SegEnemyHPInc extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "生命增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyHPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyHPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+
+/** 单字节, 敌人每级法力增长 */
+class SegEnemyMPInc extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "法力增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyMPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyMPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 敌人每级攻击增长 */
+class SegEnemyAPInc extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "攻击增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyAPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyAPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 敌人每级防御增长 */
+class SegEnemyDPInc extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "防御增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyDPInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyDPInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 敌人每级速度增长 */
+class SegEnemyEVInc extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "速度增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyEVInc(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyEVInc(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 敌人对应经验值 */
+class SegEnemyExp extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "生命增长";
+        NAMES = null;
+    }
+    
+    public SegEnemyExp(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegEnemyExp(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 肖像 */
+class SegPotrait extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "头像";
+        NAMES = null;
+    }
+    
+    public SegPotrait(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegPotrait(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 单字节, 出场时的回合数 */
+class SegRound extends BaseSeg1Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    
+    static {
+        SEGNAME = "出场回合";
+        NAMES = null;
+    }
+    
+    public SegRound(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.NUM);
+        setMin(0);
+    }
+    
+    public SegRound(){
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    @Override
+    public final String getSegName(){ return SEGNAME;}
+}
+
+/** 四字节, 第一字节是0则是物品,1则是金钱, 后三字节, 如果是物品则第一字节是编号, 如果是金钱则是数目 */
+class SegDrop extends BaseSeg4Byte {
+    private static final String SEGNAME;
+    private static final String[] NAMES;
+    private static final String[] ITEMS;
+    private static final int[] GOODITEMS;
+    
+    static {
+        SEGNAME = "掉落";
+        NAMES= NAMELIST.DROP;
+        ITEMS = NAMELIST.ITEM;
+        GOODITEMS = NAMELIST.GOODITEM;
+    }
+    
+    public SegDrop (String fName, MappedByteBuffer fBuffer, String bName, String rName, long fOffset, long bStart){
+        super(fName, fBuffer, bName, rName, fOffset, bStart);
+        setMax(MAXMODE.LISTBOUND);
+        setMin(0);
+    }
+    
+    public SegDrop() {
+        this(BaseSeg.NOTINTIATED, null, BaseSeg.NOTINTIATED, BaseSeg.NOTINTIATED, 0, 0);
+    }
+ 
+    public final String getMode(){
+        switch(getSegBytes()[0]){
+            case 1:
+                return NAMES[1];
+            case (byte) 0xFF:
+                return BaseSeg.VOIDNAME;
+            default:
+                return NAMES[0];
+        }
+    }
+    
+    public final String getContent(){
+        switch(getSegBytes()[0]) {
+            case 1:
+                return String.valueOf(BaseSeg.bytes2Int(Arrays.copyOfRange(getSegBytes(), 1, 4)));
+            case (byte) 0xFF:
+                return BaseSeg.VOIDNAME;   
+            default:
+                int index = getSegBytes()[1]&0xFF;
+                if(index <ITEMS.length & index >= 0) {
+                    return ITEMS[index];
+                } else {
+                    return BaseSeg.VOIDNAME;
+                }
+        }
+        
+    }
+    
+    @Override
+    public void setValue(VALUE whichValue, int vNumber){
+        byte[] bArray = BaseSeg.int2Bytes(vNumber);
+        switch (bArray[0]) {
+            case 1:
+                break;
+            case (byte)0xFF:
+                for(int i=1;i<4;i++){
+                    bArray[i] = 0;
+                }       
+            default:
+                bArray[0] = 0;
+                int index = bArray[1] & 0xFF;
+                if(index >= ITEMS.length | index < 0 ) {
+                    int rIndex = new Random().nextInt(GOODITEMS.length);
+                    bArray[1] = (byte) GOODITEMS[rIndex];
+                }  
+        }
+        super.setValue(whichValue, BaseSeg.bytes2Int(bArray));   
+    }
+    
+    @Override
+    public void setValue(int vNumber){
+        this.setValue(VALUE.CURRENT, vNumber);
+    }
+    
+    @Override
+    public final String displayString(){
+        return String.format("%s: %s", getMode(), getContent());
+    }
+    
+    @Override
+    public final String[] getNameList(){
+        if (NAMES == null) {
+            return null;
+        } else {
+            return NAMES.clone();
+        }
+    }
+    
+    @Override
+    public final String getSegName(){ return SEGNAME; }
+    
 }
