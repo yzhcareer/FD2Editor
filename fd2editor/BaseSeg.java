@@ -216,11 +216,26 @@ public abstract class BaseSeg {
         return bArray;
     }
     
+    /**
+     * 把整型变量转化为byte数组, 长度由getLength()决定
+     * @param vNumber: 整型变量
+     * @return  byte[]: byte数组
+     */
+    public final byte[] num2Bytes(int vNumber){
+        int arrayLength = getLength();
+        byte[] bArray = new byte[arrayLength];
+        for(int i=0;i<arrayLength;i++){
+            bArray[i] = (byte)(vNumber & 0xFF);
+            vNumber = vNumber >> 8;    
+        }
+        return bArray;
+    }
+    
     /** 
      * 根据value的值改写segBytes 
      */
     private void updateSegBytes(){
-        segBytes = int2Bytes(value);
+        segBytes = num2Bytes(value);
     }
     
     /** 
@@ -268,7 +283,7 @@ public abstract class BaseSeg {
      * 将segBytes按当前地址写回缓冲区 
      */
     public final void seqWrite(){
-        fileBuffer.put(segBytes);
+        fileBuffer.put(getSegBytes());
     }
     
     /** 修改value的值并update segBytes
@@ -285,7 +300,6 @@ public abstract class BaseSeg {
      * @param sValue: 修改目标值 
      */ 
     public void setValue(VALUE whichValue, int sValue){
-        sValue = sValue & 0x7FFFFFF;
         if (sValue > max) {
             sValue = max;
         } 

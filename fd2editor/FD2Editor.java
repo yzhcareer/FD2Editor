@@ -10,7 +10,34 @@ import java.nio.MappedByteBuffer;
 import java.io.FileNotFoundException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
+import java.io.FileInputStream;
+
+class CompareFile {
+    
+    FileInputStream fileStream1;
+    FileInputStream fileStream2;
+
+    public CompareFile(String file1, String file2) throws FileNotFoundException {
+        this.fileStream1 = new FileInputStream(file1);
+        this.fileStream2 = new FileInputStream(file2);
+    }
+    
+    public final void proceed() throws IOException{
+        int b1;
+        int b2;
+        int count = 0;
+        int size = Math.min(fileStream1.available(), fileStream2.available());
+        System.out.println(size);
+        for(int i=0; i<size;i++){
+            b1 = fileStream1.read();
+            b2 = fileStream2.read();
+            if (b1 != b2) {
+                System.out.print(String.format("0x%07X", count) + ":  " + b1 + " -> " + b2 + "\n");
+            } 
+            count++;
+        }
+    }
+}
 
 /**
  *
@@ -25,7 +52,7 @@ public class FD2Editor {
      * @throws java.lang.NoSuchMethodException
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, NoSuchMethodException{
-        String fdName = "../FD2.bin";
+        String fdName = "../FD2副本.bin";
         MappedByteBuffer fdBuffer;
         try 
         { RandomAccessFile fdFile = new RandomAccessFile(fdName, "rw");
@@ -44,7 +71,7 @@ public class FD2Editor {
         
         Block b1 = new Block();
         b1.initBlock(RECORDTYPE.法术, fdBuffer, 0);
-        b1.read();
+        //b1.read();
         //System.out.print(b1);
         //System.out.print(b1.getBlockLength());
         
@@ -66,18 +93,25 @@ public class FD2Editor {
         fieldBuffer.order(ByteOrder.BIG_ENDIAN);
         
         Block stage1 = new Block();
-        stage1.initBlock(RECORDTYPE.爆击, fdBuffer, 0);
-        stage1.read();
+        //stage1.initBlock(RECORDTYPE.爆击, fdBuffer, 0);
+        //stage1.read();
         //System.out.print(stage1);
         //System.out.print(stage1.getBlockLength());
         //System.out.print("\n");
+        
         
         SWITCHTYPE st = SWITCHTYPE.行走加速;
         Switches sch = new Switches(st, fdBuffer);
         System.out.print(sch);
         sch.turnON();
         sch.write();
-        fdBuffer.force();
+        System.out.print(sch);
+        sch.turnOFF();
+        System.out.print(sch);
+        sch = new Switches(st, fdBuffer);
+        System.out.print(sch);
+        sch.turnON();
+        System.out.print(sch);
         sch = new Switches(st, fdBuffer);
         System.out.print(sch);
     }    

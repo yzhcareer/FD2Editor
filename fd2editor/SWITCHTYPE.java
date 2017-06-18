@@ -14,6 +14,10 @@ public enum SWITCHTYPE {
     罗德曼加入(NAMELIST.FD2FILE, new String[] {"0x4A84B", "0D", "13"}),
     行走加速(NAMELIST.FD2FILE, new String[] {null, "FCFFFF6804", "FCFFFFC304"},
                               new String[] {null, "E8A741", "EB0341"}),
+    文字加速(NAMELIST.FD2FILE, new String[] {null, "E85414", "EB0315"}),
+    回合加速(NAMELIST.FD2FILE, new String[] {"0x453DA", "E8DE86", "EB0386"},
+                              new String[] {"0x452F8", "E8C087", "EB0387"},
+                              new String[] {"0x454DB", "E8DD85", "EB0385"}), 
     
     
     ;

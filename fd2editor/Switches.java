@@ -65,7 +65,7 @@ public class Switches {
                 }
             } 
             // address provided, add the new flip
-            else {FlipTuple newTuple = new FlipTuple(Long.parseLong(fAddress[i][0]), 
+            else {FlipTuple newTuple = new FlipTuple(Long.parseLong(fAddress[i][0].replaceAll("^0x|^0X", ""), 16), 
                                                        string2Bytes(fAddress[i][1]),
                                                        string2Bytes(fAddress[i][2]));
                     flipTuples.add(newTuple);   
@@ -178,6 +178,15 @@ public class Switches {
     public final void write(){
         this.flipSegs.forEach((flip)->{
             flip.write();
+        });   
+    }
+    
+    /**
+     * 把设定的flip状态读出
+     */
+    public final void read(){
+        this.flipSegs.forEach((flip)->{
+            flip.read();
         });   
     }
     

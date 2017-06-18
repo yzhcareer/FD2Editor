@@ -28,6 +28,7 @@ public class FlipTuple {
         this.offValue = offV.clone();
     }
     
+    
     public final void setOnValue(byte[] onV){
         this.onValue = onV.clone();
     }
