@@ -66,12 +66,19 @@ public class FD2Editor {
         fieldBuffer.order(ByteOrder.BIG_ENDIAN);
         
         Block stage1 = new Block();
-        for(String stage: Arrays.copyOfRange(NAMELIST.CHAPTER, 0, 5)){
-            stage1.initBlock(RECORDTYPE.valueOf(stage), fieldBuffer, 0);
-            stage1.read();
-            System.out.print(stage1);
-            System.out.print(stage1.getBlockLength());
-            System.out.print("\n");
-        }
+        stage1.initBlock(RECORDTYPE.爆击, fdBuffer, 0);
+        stage1.read();
+        //System.out.print(stage1);
+        //System.out.print(stage1.getBlockLength());
+        //System.out.print("\n");
+        
+        SWITCHTYPE st = SWITCHTYPE.行走加速;
+        Switches sch = new Switches(st, fdBuffer);
+        System.out.print(sch);
+        sch.turnON();
+        sch.write();
+        fdBuffer.force();
+        sch = new Switches(st, fdBuffer);
+        System.out.print(sch);
     }    
 }

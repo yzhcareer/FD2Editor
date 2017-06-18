@@ -153,7 +153,8 @@ public final class NAMELIST {
                                                 "卡恩那三世"    };
                                                 
     public static final String[] ROLE =  Arrays.copyOfRange(CHARACTER, 0, 32);
-    public static final String[] ENEMY = Arrays.copyOfRange(CHARACTER, 68, 128);                                            
+    public static final String[] CLASSPATH = Arrays.copyOfRange(CHARACTER, 0, 66);
+    public static final String[] ENEMY = Arrays.copyOfRange(CHARACTER, 68, 136);                                            
                                             
     public static final String[] ITEM = {   "短剑",
                                             "阔剑",
@@ -407,6 +408,9 @@ public final class NAMELIST {
                                             "风妖精",
                                             "破坏神",
                                             "暗邪鬼"    };
+    
+    public static final String[] MAGICNONULL = Arrays.copyOfRange(NAMELIST.MAGIC, 1, NAMELIST.MAGIC.length);
+    
     public static final String[] CLASS = {  "龙",
                                             "剑士",
                                             "战士",
@@ -448,7 +452,8 @@ public final class NAMELIST {
                                             "机械",
                                             "元素",
                                             "兽人",
-                                            "其他"  };
+                                            "其他",
+                                            "龙"};
     
     public static final String[] ALIGNMENT = {"敌军", "友军", "我军"};
     public static final String[] RANGETYPE = {"范围", "直线"};

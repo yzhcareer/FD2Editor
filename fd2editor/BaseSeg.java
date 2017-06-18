@@ -285,6 +285,7 @@ public abstract class BaseSeg {
      * @param sValue: 修改目标值 
      */ 
     public void setValue(VALUE whichValue, int sValue){
+        sValue = sValue & 0x7FFFFFF;
         if (sValue > max) {
             sValue = max;
         } 
@@ -638,7 +639,7 @@ public abstract class BaseSeg {
      * @return boolean: defaultValue是否从-1的缺省值被改写过
      */
     public final boolean hasDefaultValue(){
-        return this.defaultValue == -1;
+        return this.defaultValue != -1;
     }
    
     /** 胶水方法:优化值, 没有写方法
@@ -659,7 +660,7 @@ public abstract class BaseSeg {
      * @return boolean: recommendValue是否从-1的缺省值被改写过
      */
     public final boolean hasRecommendValue(){
-        return this.recommendValue == -1;
+        return this.recommendValue != -1;
     }
    
     /** 胶水方法: 返回当前值, 写方法是setValue()

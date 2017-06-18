@@ -1089,7 +1089,7 @@ class SegMagic extends BaseSeg1Byte {
     
     static {
         SEGNAME = "法术";
-        NAMES = NAMELIST.MAGIC;
+        NAMES = NAMELIST.MAGICNONULL;
     }
     
     public SegMagic(String fName, MappedByteBuffer fBuffer,  String bName, String rName, long fOffset, long bStart){
@@ -1163,7 +1163,7 @@ class SegMagicResist extends BaseSeg1Byte {
 }
 
 /** 单字节, 敌人每级生命增长 */
-class SegEnemyHPInc extends BaseSeg1Byte {
+class SegEnemyHPInc extends BaseSeg2Byte {
     private static final String SEGNAME;
     private static final String[] NAMES;
     
@@ -1329,7 +1329,7 @@ class SegEnemyExp extends BaseSeg1Byte {
     private static final String[] NAMES;
     
     static {
-        SEGNAME = "生命增长";
+        SEGNAME = "经验值";
         NAMES = null;
     }
     
