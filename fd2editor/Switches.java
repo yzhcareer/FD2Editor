@@ -8,12 +8,14 @@ import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * 所有的开关类
  * @author CIDER
  */
-public class Switches {
+public abstract class Switches {
     /** 文件名 */
     private String fileName;
     /** 开关名 */
@@ -23,12 +25,12 @@ public class Switches {
     /** 字段说明 */
     public enum ADDRESSKEY {地址, 关闭, 开启};
     /** 开关字段 */
-    private ArrayList<BaseSeg> flipSegs;
+    private ArrayList<BaseSeg> switchSegs;
     /** 开关字段的数据结构, 用于格式化输出 */
-    private ArrayList<FlipTuple> flipTuples;
+    private ArrayList<SwitchTuple> swtichTuples;
 
     /**
-     * 构造器
+     * SWITCHTYPE构造器
      * @param sType: SWITCHTYPE纪录
      * @param fBuffer: 数据缓冲区 
      */
@@ -36,66 +38,39 @@ public class Switches {
         this.setFileName(sType.getFileName());
         this.setSwitchName(sType.name());
         this.linkBuffer(fBuffer); 
-        this.initFlips(sType.getAddress());
-        this.initSegs();
+    }
+    
+    /**
+     * SELECTORTYPE构造器
+     * @param sType: SWITCHTYPE纪录
+     * @param fBuffer: 数据缓冲区 
+     */
+    public Switches(SELECTTYPE sType, MappedByteBuffer fBuffer){
+        this.setFileName(sType.getFileName());
+        this.setSwitchName(sType.name());
+        this.linkBuffer(fBuffer); 
     }
     
     /**
      * 初始化所有的开关, 或者有偏移地址的, 或者没有偏移地址则由字节数值在文件里面搜索
+     * 不把fAddress传入到类属性, 不必担心被改写
      * @param fAddress: 字符串形式的开关数据
      */
-    public final void initFlips(String[][] fAddress){
-        int length = fAddress.length;
-        flipTuples = new ArrayList<>();
-        for(int i=0;i<length;i++){
-            if(fAddress[i][0] == null){
-                // no address provided, search the file for the offset of offValues;
-                for(int oneAddress: searchHexCodes(this.fileBuffer, fAddress[i][1])){
-                    FlipTuple newTuple = new FlipTuple(oneAddress, 
-                                                       string2Bytes(fAddress[i][1]),
-                                                       string2Bytes(fAddress[i][2]));
-                    flipTuples.add(newTuple); 
-                }
-                //s earch the file for the offset of onValues;
-                for(int oneAddress: searchHexCodes(this.fileBuffer, fAddress[i][2])){
-                    FlipTuple newTuple = new FlipTuple(oneAddress, 
-                                                       string2Bytes(fAddress[i][1]),
-                                                       string2Bytes(fAddress[i][2]));
-                    flipTuples.add(newTuple); 
-                }
-            } 
-            // address provided, add the new flip
-            else {FlipTuple newTuple = new FlipTuple(Long.parseLong(fAddress[i][0].replaceAll("^0x|^0X", ""), 16), 
-                                                       string2Bytes(fAddress[i][1]),
-                                                       string2Bytes(fAddress[i][2]));
-                    flipTuples.add(newTuple);   
-            }    
-        }   
-    }
-    
+    public abstract void initSwitches(String[][] fAddress);
+
     /**
      * 由建立的开关单元列表简历开关字节列表, 对比开和关两个字节列表里不同的字节
      */
-    public final void initSegs(){
-        this.flipSegs = new ArrayList<>();
-        int count = 0;
-        for(FlipTuple flip: this.getFlipTuples()){
-            for(int i=0;i<flip.getByteLength();i++){
-                if(flip.getOffValue()[i] != flip.getOnValue()[i]){
-                    BaseSeg fSeg = new SegFlip(this.getFileName(),
-                                               this.getBuffer(),
-                                               this.getSwitchName(),
-                                               String.format("%02d", ++count),
-                                               flip.getFileOffset() + i,
-                                               0);
-                    fSeg.setDefaultValue((int)flip.getOffValue()[i] & 0xFF);
-                    fSeg.setRecommendValue((int)flip.getOnValue()[i] & 0xFF);
-                    fSeg.read();
-                    this.flipSegs.add(fSeg);
-                }
-            }
-        }
-    }
+    public abstract void initSegs();
+    
+    /**
+     * 静态方法,从一个字节缓冲区里查找给定的byteArray
+     * @param hexString: 字符串形式的byteArray
+     * @return Integer[]: 找到的所有地址
+     */
+    public abstract Integer[] searchHexCodes(String hexString);
+    
+
     /**
      * 输出开关类的文档
      * @return StringBuilder: 开关的输出格式
@@ -103,7 +78,7 @@ public class Switches {
     public final StringBuilder switchDoc(){
         StringBuilder sDoc = new StringBuilder(this.switchName);
         sDoc.append(":\n");
-        flipTuples.forEach((flip)->{
+        swtichTuples.forEach((flip)->{
             sDoc.append(ADDRESSKEY.地址.name()).append(": ");
             sDoc.append(String.format("0x%07X\n", flip.getFileOffset()));
             sDoc.append(ADDRESSKEY.关闭.name()).append(": ");
@@ -122,18 +97,18 @@ public class Switches {
      */
     public final StringBuilder segString(){
         int tWidth = BaseSeg.getTitleWidth();
-        int length = flipSegs.size();
+        int length = switchSegs.size();
         StringBuilder dString = new StringBuilder(BaseSeg.alignString(switchName, 
                                                                       BaseSeg.ALIGN.CENTER,
                                                                       tWidth, '_'));
         LinkedHashMap<String, String> [] docArray = new LinkedHashMap[length];
         for (int i=0; i<length; i++){
-            docArray[i] = flipSegs.get(i).alignedDocStringMap();
+            docArray[i] = switchSegs.get(i).alignedDocStringMap();
         }
         if(length == 0 || docArray[0].isEmpty()) {
             dString.append(":  The Switch is Empty!");
         } else {
-            flipSegs.forEach((bSeg) -> {
+            switchSegs.forEach((bSeg) -> {
                 dString.append(bSeg.alignString(bSeg.getSegName(), BaseSeg.ALIGN.CENTER, '_'));
             });
             dString.append("\n");
@@ -155,28 +130,10 @@ public class Switches {
     }
     
     /**
-     * 所有flip设成开
-     */
-    public final void turnON(){
-        this.flipSegs.forEach((flip)->{
-            flip.optimize();
-        });
-    }
-    
-    /**
-     * 所有flip设成关
-     */
-    public final void turnOFF(){
-        this.flipSegs.forEach((flip)->{
-            flip.reset();
-        });  
-    }
-    
-    /**
      * 把设定的flip状态写回
      */
     public final void write(){
-        this.flipSegs.forEach((flip)->{
+        this.switchSegs.forEach((flip)->{
             flip.write();
         });   
     }
@@ -185,32 +142,9 @@ public class Switches {
      * 把设定的flip状态读出
      */
     public final void read(){
-        this.flipSegs.forEach((flip)->{
+        this.switchSegs.forEach((flip)->{
             flip.read();
         });   
-    }
-    
-    /**
-     * 静态方法,从一个字节缓冲区里查找给定的byteArray
-     * @param fBuffer: 字节缓冲区
-     * @param hexString: 字符串形式的byteArray
-     * @return Integer[]: 找到的所有地址
-     */
-    
-    public static final Integer[] searchHexCodes(MappedByteBuffer fBuffer, String hexString){
-        ArrayList<Integer> foundPos = new ArrayList<>();
-        byte[] hexCodes = string2Bytes(stringParse(hexString));
-        int byteLength = hexCodes.length;
-        byte[] readCodes = new byte[byteLength];
-        for(int i=0;i<fBuffer.capacity()-byteLength;i++){
-            fBuffer.position(i);
-            fBuffer.get(readCodes);
-            if(Arrays.equals(hexCodes, readCodes)){
-                foundPos.add(i);
-            }
-        }
-        Integer[] address = foundPos.toArray(new Integer[foundPos.size()]);    
-        return address;
     }
     
     /**
@@ -307,17 +241,278 @@ public class Switches {
     public final void setSwitchName(String sName){
         this.switchName = sName;
     } 
-    /** 胶水方法:flip列表
-     * @return FlipTuple[]: flipTuple的列表
+    
+    /** 胶水方法:switch列表
+     * @return SwitchTuple[]: switchTuple的列表
      */ 
-    public final FlipTuple[] getFlipTuples(){
-        return this.flipTuples.toArray(new FlipTuple[this.flipTuples.size()]);
+    public final SwitchTuple[] getSwitchTuplesAsArray(){
+        return this.swtichTuples.toArray(new SwitchTuple[this.swtichTuples.size()]);
     }
     
-    /** 胶水方法:flipSeg列表
-     * @return SegFlip[]: flipSeg的列表
+    /** 胶水方法:switch列表
+     * @return SwitchTuple[]: switchTuple的列表
      */ 
-    public final BaseSeg[] getSegFlips(){
-        return this.flipSegs.toArray(new BaseSeg[this.flipSegs.size()]);
+    public final ArrayList<SwitchTuple> getSwitchTuples(){
+        return this.swtichTuples;
+    }
+    
+    /** 胶水方法:switch列表
+     * @param sTuples: 传入的Switchuple Array
+     */ 
+    public final void setSwitchTuples(ArrayList<SwitchTuple> sTuples){
+        this.swtichTuples = sTuples;
+    }
+    
+    /** 胶水方法:switchSeg列表
+     * @return BaseSeg[]: switchSeg的列表
+     */ 
+    public final BaseSeg[] getSwitchSegsAsArray(){
+        return this.switchSegs.toArray(new BaseSeg[this.switchSegs.size()]);
+    }
+    
+    /** 胶水方法:switchSeg列表
+     * @return BaseSeg[]: switchSeg的列表
+     */ 
+    public final ArrayList<BaseSeg> getSwitchSegs(){
+        return this.switchSegs;
+    }
+    
+    /** 胶水方法:switchSeg列表
+     * @param sSegs: switchSeg的列表
+     */ 
+    public final void setSwitchSegs(ArrayList<BaseSeg> sSegs){
+        this.switchSegs = sSegs;
+    }
+}
+
+
+
+
+
+class Flips extends Switches{
+    
+    public Flips(SWITCHTYPE sType, MappedByteBuffer fBuffer){
+        super(sType, fBuffer);
+        this.initSwitches(sType.getAddress());
+        this.initSegs();
+    }
+    
+    /**
+     * 初始化所有的开关, 或者有偏移地址的, 或者没有偏移地址则由字节数值在文件里面搜索
+     * 不把fAddress传入到类属性, 不必担心被改写
+     * @param fAddress: 字符串形式的开关数据
+     */
+    @Override
+    public final void initSwitches(String[][] fAddress){
+        int length = fAddress.length;
+        setSwitchTuples(new ArrayList<>());
+        for(int i=0;i<length;i++){
+            if(fAddress[i][0] == null){
+                // no address provided, search the file for the offset of offValues;
+                for(int oneAddress: searchHexCodes(fAddress[i][1])){
+                    getSwitchTuples().add(new SwitchTuple(oneAddress,
+                                                        string2Bytes(fAddress[i][1]),
+                                                        string2Bytes(fAddress[i][2]))); 
+                }
+                // search the file for the offset of onValues;
+                for(int oneAddress: searchHexCodes(fAddress[i][2])){
+                    getSwitchTuples().add(new SwitchTuple(oneAddress,
+                                                        string2Bytes(fAddress[i][1]),
+                                                        string2Bytes(fAddress[i][2]))); 
+                }
+            } 
+            // address provided, add the new flip
+            else {
+                getSwitchTuples().add(new SwitchTuple(Long.parseLong(fAddress[i][0].replaceAll("^0x|^0X", ""), 16), 
+                                                       string2Bytes(fAddress[i][1]),
+                                                       string2Bytes(fAddress[i][2])));       
+            }    
+        }   
+    }
+    
+    /**
+     * 由建立的开关单元列表简历开关字节列表, 对比开和关两个字节列表里不同的字节
+     */
+    @Override
+    public final void initSegs(){
+        setSwitchSegs(new ArrayList<>());
+        int count = 0;
+        for(SwitchTuple flip: this.getSwitchTuplesAsArray()){
+            for(int i=0;i<flip.getByteLength();i++){
+                if(flip.getOffValue()[i] != flip.getOnValue()[i]){
+                    BaseSeg fSeg = new SegFlip(this.getFileName(),
+                                               this.getBuffer(),
+                                               this.getSwitchName(),
+                                               String.format("%02d", ++count),
+                                               flip.getFileOffset() + i,
+                                               0);
+                    fSeg.setDefaultValue((int)flip.getOffValue()[i] & 0xFF);
+                    fSeg.setRecommendValue((int)flip.getOnValue()[i] & 0xFF);
+                    fSeg.read();
+                    this.getSwitchSegs().add(fSeg);
+                }
+            }
+        }
+    }
+    
+    /**
+     * 静态方法,从一个字节缓冲区里查找给定的byteArray
+     * @param hexString: 字符串形式的byteArray
+     * @return Integer[]: 找到的所有地址
+     */
+    @Override
+    public final Integer[] searchHexCodes(String hexString){
+        ArrayList<Integer> foundPos = new ArrayList<>();
+        byte[] hexCodes = string2Bytes(stringParse(hexString));
+        int byteLength = hexCodes.length;
+        byte[] readCodes = new byte[byteLength];
+        for(int i=0;i<getBuffer().capacity()-byteLength;i++){
+            getBuffer().position(i);
+            getBuffer().get(readCodes);
+            if(Arrays.equals(hexCodes, readCodes)){
+                foundPos.add(i);
+            }
+        }
+        Integer[] address = foundPos.toArray(new Integer[foundPos.size()]);    
+        return address;
+    }
+    
+    /**
+     * 所有flip设成开
+     */
+    public final void turnON(){
+        getSwitchSegs().forEach((flip)->{
+            flip.optimize();
+        });
+    }
+    
+    /**
+     * 所有flip设成关
+     */
+    public final void turnOFF(){
+        getSwitchSegs().forEach((flip)->{
+            flip.reset();
+        });  
+    }
+}
+
+
+class Selectors extends Switches {
+    
+    private int max;
+    private int min;
+      
+    public Selectors(SELECTTYPE sType, MappedByteBuffer fBuffer){
+        super(sType, fBuffer);
+        this.setMax(sType.getMax());
+        this.setMin(sType.getMin());
+        this.initSwitches(sType.getAddress());
+        this.initSegs();
+    }
+    
+    
+    /**
+     * 从一个字节缓冲区里查找给定的byteArray, 可以带??通配符
+     * @param hexString: 字符串形式的byteArray
+     * @return Integer[]: 找到的所有地址
+     */
+   @Override
+   public final Integer[] searchHexCodes(String hexString){
+       String parsedString = parseString(hexString);
+       Pattern sPattern = Pattern.compile(parsedString.replaceAll("\\?", "[0-9a-fA-F]"));
+       ArrayList<Integer> address = new ArrayList<>();
+       int byteLength = (int)Math.ceil(parsedString.length()/2.0);
+       byte[] readCodes = new byte[byteLength];
+       for(int i=0; i<getBuffer().capacity()-byteLength;i++){
+           getBuffer().position(i);
+           getBuffer().get(readCodes);
+           
+       }
+       
+       
+   }
+    
+    
+    
+    /**
+     * 整理一个hexString, 保留??统配符号并转化为"\d\d"
+     * @param hexString: 输入的字符串
+     * @return String: 整理好的字符串
+     */
+    public final String parseString(String hexString){
+        Pattern sPattern = Pattern.compile("(?:0[xX])?([0-9a-fA-F]*(\\?\\?)*)+");
+        Matcher sMatch = sPattern.matcher(hexString);
+        StringBuilder sString = new StringBuilder();
+        while(sMatch.find()){
+            sString.append(String.valueOf(sMatch.group()));
+        }
+        return sString.toString().replaceAll("0x|0X", "");
+    }
+    
+    /**
+     * 初始化所有的开关, 或者有偏移地址的, 或者没有偏移地址则由字节数值在文件里面搜索
+     * 不把fAddress传入到类属性, 不必担心被改写
+     * @param fAddress: 字符串形式的开关数据
+     */
+    @Override
+    public final void initSwitches(String[][] fAddress){
+        
+    }
+    /**
+     * 由建立的开关单元列表简历开关字节列表, 对比开和关两个字节列表里不同的字节
+     */
+    @Override
+    public final void initSegs(){
+        
+    }
+    
+    /**
+     * 胶水方法: 最大值
+     * @param mValue: 最大值
+     */
+    public final void setMax(int mValue){
+        this.max = mValue;
+    }
+    
+    /**
+     * 胶水方法: 最大值
+     * @return int: 最小值
+     */
+    public final int getMax(){
+        return this.max;
+    }
+    
+    /**
+     * 胶水方法: 最小值
+     * @param mValue: 最大值
+     */
+    public final void setMin(int mValue){
+        this.min = mValue;
+    }
+    
+    /**
+     * 胶水方法: 最大值
+     * @return int: 最小值
+     */
+    public final int getMin(){
+        return this.min;
+    }
+    
+    /**
+     * 设为优化值
+     */
+    public final void optimize(){
+        getSwitchSegs().forEach((flip)->{
+            flip.optimize();
+        });
+    }
+    
+    /**
+     * 设为缺省值
+     */
+    public final void reset(){
+        getSwitchSegs().forEach((flip)->{
+            flip.reset();
+        });  
     }
 }

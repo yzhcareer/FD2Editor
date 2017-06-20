@@ -9,12 +9,12 @@ package fd2editor;
  * 简单的开关类, 包括偏移地址, 原字节数据, 和修改的字节数据
  * @author CIDER
  */
-public class FlipTuple {
+public class SwitchTuple {
     private long fileOffset;
     private byte[] offValue;
     private byte[] onValue;
     
-    public FlipTuple(long fOffset, byte[] offV, byte[] onV){
+    public SwitchTuple(long fOffset, byte[] offV, byte[] onV){
         this.setFileOffset(fOffset);
         this.setOffValue(offV);
         this.setOnValue(onV);

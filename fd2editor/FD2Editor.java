@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.io.FileInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class CompareFile {
     
@@ -99,20 +101,33 @@ public class FD2Editor {
         //System.out.print(stage1.getBlockLength());
         //System.out.print("\n");
         
-        
+        /*
         SWITCHTYPE st = SWITCHTYPE.行走加速;
-        Switches sch = new Switches(st, fdBuffer);
+        Flips sch = new Flips(st, fdBuffer);
         System.out.print(sch);
         sch.turnON();
         sch.write();
         System.out.print(sch);
         sch.turnOFF();
         System.out.print(sch);
-        sch = new Switches(st, fdBuffer);
+        sch = new Flips(st, fdBuffer);
         System.out.print(sch);
         sch.turnON();
         System.out.print(sch);
-        sch = new Switches(st, fdBuffer);
-        System.out.print(sch);
+        sch = new Flips(st, fdBuffer);
+        System.out.print(sch);*/
+        
+        Pattern sPattern = Pattern.compile("(?:0[xX])?([0-9a-fA-F]*(\\?\\?)*)+");
+        Matcher sMatch = sPattern.matcher("0x56we7f??45?ff");
+        StringBuilder s = new StringBuilder();
+        while(sMatch.find()) {
+            s.append(String.valueOf(sMatch.group()));
+        }
+        String s1 = s.toString().replaceAll("0x|0X", "");
+        System.out.println(s1 + s1.length() + Pattern.compile(s1).toString().length());
+        
+        String[] sArray = new String[] {"ab", "cd", "11"};
+        System.out.println(String.join("", sArray));
+        
     }    
 }
