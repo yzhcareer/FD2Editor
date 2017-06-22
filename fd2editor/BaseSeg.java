@@ -450,7 +450,7 @@ public abstract class BaseSeg {
     /** 创建docString, 用LinkedHashMap格式方便子类添加
      * @return LinkedHashMap: 包含需要输出的键值对
      */
-    public final LinkedHashMap docStringMap(){
+    public final LinkedHashMap<DOCKEY, String> docStringMap(){
         LinkedHashMap<DOCKEY, String> docMap = new LinkedHashMap<>();
         docMap.put(DOCKEY.源文件名, fileName);
         docMap.put(DOCKEY.数据名称, blockName);
@@ -472,7 +472,7 @@ public abstract class BaseSeg {
      * 格式化docStringMap
      * @return LinkedHashMap: 格式化好的docStringMap
      */
-    public final LinkedHashMap alignedDocStringMap(){
+    public final LinkedHashMap<String, String> alignedDocStringMap(){
         LinkedHashMap<DOCKEY, String> docMap = docStringMap();
         LinkedHashMap<String, String> alignedDocMap = new LinkedHashMap<>();
         docMap.entrySet().forEach((entry) -> {

@@ -53,81 +53,57 @@ public class FD2Editor {
      * @throws IOException
      * @throws java.lang.NoSuchMethodException
      */
-    public static void main(String[] args) throws FileNotFoundException, IOException, NoSuchMethodException{
+    public static void main(String[] args) throws FileNotFoundException, IOException, NoSuchMethodException {
         String fdName = "../FD2副本.bin";
         MappedByteBuffer fdBuffer;
-        try 
-        { RandomAccessFile fdFile = new RandomAccessFile(fdName, "rw");
-          FileChannel fdChannel = fdFile.getChannel();
-          fdBuffer = fdChannel.map(FileChannel.MapMode.READ_WRITE, 0, fdChannel.size());
-        } 
-        catch(FileNotFoundException e) {
+        try {
+            RandomAccessFile fdFile = new RandomAccessFile(fdName, "rw");
+            FileChannel fdChannel = fdFile.getChannel();
+            fdBuffer = fdChannel.map(FileChannel.MapMode.READ_WRITE, 0, fdChannel.size());
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
             throw e;
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             throw e;
         }
         fdBuffer.order(ByteOrder.BIG_ENDIAN);
-        
+
         Block b1 = new Block();
         b1.initBlock(RECORDTYPE.法术, fdBuffer, 0);
         //b1.read();
         //System.out.print(b1);
         //System.out.print(b1.getBlockLength());
-        
+
         String fieldName = "../FDFIELD.dat";
         MappedByteBuffer fieldBuffer;
-        try 
-        { RandomAccessFile fieldFile = new RandomAccessFile(fieldName, "rw");
-          FileChannel fieldChannel = fieldFile.getChannel();
-          fieldBuffer = fieldChannel.map(FileChannel.MapMode.READ_WRITE, 0, fieldChannel.size());
-        } 
-        catch(FileNotFoundException e) {
+        try {
+            RandomAccessFile fieldFile = new RandomAccessFile(fieldName, "rw");
+            FileChannel fieldChannel = fieldFile.getChannel();
+            fieldBuffer = fieldChannel.map(FileChannel.MapMode.READ_WRITE, 0, fieldChannel.size());
+        } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
             throw e;
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             throw e;
         }
         fieldBuffer.order(ByteOrder.BIG_ENDIAN);
-        
+
         Block stage1 = new Block();
         //stage1.initBlock(RECORDTYPE.爆击, fdBuffer, 0);
         //stage1.read();
         //System.out.print(stage1);
         //System.out.print(stage1.getBlockLength());
         //System.out.print("\n");
-        
-        /*
-        SWITCHTYPE st = SWITCHTYPE.行走加速;
-        Flips sch = new Flips(st, fdBuffer);
-        System.out.print(sch);
-        sch.turnON();
-        sch.write();
-        System.out.print(sch);
-        sch.turnOFF();
-        System.out.print(sch);
-        sch = new Flips(st, fdBuffer);
-        System.out.print(sch);
-        sch.turnON();
-        System.out.print(sch);
-        sch = new Flips(st, fdBuffer);
-        System.out.print(sch);*/
-        
-        Pattern sPattern = Pattern.compile("(?:0[xX])?([0-9a-fA-F]*(\\?\\?)*)+");
-        Matcher sMatch = sPattern.matcher("0x56we7f??45?ff");
-        StringBuilder s = new StringBuilder();
-        while(sMatch.find()) {
-            s.append(String.valueOf(sMatch.group()));
+
+
+        FLIPTYPE ft = FLIPTYPE.行走加速;
+        Flips fh = new Flips(ft, fdBuffer);
+        //System.out.print(fh);
+        for(FLIPTYPE st: FLIPTYPE.FDFIELDFLIPS) {
+            Flips flip = new Flips(st, fieldBuffer);
+            System.out.print(flip);
         }
-        String s1 = s.toString().replaceAll("0x|0X", "");
-        System.out.println(s1 + s1.length() + Pattern.compile(s1).toString().length());
-        
-        String[] sArray = new String[] {"ab", "cd", "11"};
-        System.out.println(String.join("", sArray));
-        
-    }    
+    }
 }

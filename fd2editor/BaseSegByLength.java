@@ -155,7 +155,15 @@ abstract class BaseSegRange extends BaseSeg2Byte {
     public BaseSegRange(){
         this(NOTINTIATED, null, NOTINTIATED, NOTINTIATED, 0, 0);
     }
-    
+
+    public static int getLENGTH() {
+        return LENGTH;
+    }
+
+    public static int getCOLWIDTH() {
+        return COLWIDTH;
+    }
+
     /**
      * 重写value setter(),保证写入的时候小的值在低位,大的值在高位,
      * 同时任何一位都应该是正Byte值

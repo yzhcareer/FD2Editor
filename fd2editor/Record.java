@@ -6,6 +6,7 @@
 package fd2editor;
 import java.nio.MappedByteBuffer;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
 /**
  * 纪录类, 是一系列Segment的集合
@@ -215,18 +216,18 @@ public class Record {
         StringBuilder dString = new StringBuilder(BaseSeg.alignString(recordName, 
                                                                       BaseSeg.ALIGN.CENTER,
                                                                       tWidth, '_'));
-        LinkedHashMap<String, String> [] docArray = new LinkedHashMap[length];
+        ArrayList<LinkedHashMap<String, String>> docArray = new ArrayList<>();
         for (int i=0; i<length; i++){
-            docArray[i] = segList[i].alignedDocStringMap();
+            docArray.add(segList[i].alignedDocStringMap());
         }
-        if(length == 0 || docArray[0].isEmpty()) {
+        if(length == 0 || docArray.get(0).isEmpty()) {
             dString.append(":  The Record is Empty!");
         } else {
             for (BaseSeg bSeg: segList) {
                 dString.append(bSeg.alignString(bSeg.getSegName(), BaseSeg.ALIGN.CENTER, '_'));
             }
             dString.append("\n");
-            docArray[0].keySet().forEach((keyString) -> {
+            docArray.get(0).keySet().forEach((keyString) -> {
                 dString.append(keyString);
                 for (LinkedHashMap dMap: docArray){
                     dString.append(dMap.get(keyString));
